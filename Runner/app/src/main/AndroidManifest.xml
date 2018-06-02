@@ -40,5 +40,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".BaseActivity" />
+
+        <service android:name=".services.FirebaseService" />
     </application>
 </manifest>

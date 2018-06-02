@@ -9,12 +9,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * Class provides a base for the Navigation Drawer that is shared amongst the Activities
+ * Adapted from https://stackoverflow.com/questions/19451715/same-navigation-drawer-in-different-activities?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
  */
 
 public class BaseActivity
@@ -50,7 +54,7 @@ public class BaseActivity
    @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
+            closeDrawer(GravityCompat.START);
         }
         else {
             super.onBackPressed();
@@ -67,14 +71,30 @@ public class BaseActivity
             case R.id.nav_home:
                 intent = new Intent(getApplicationContext(), MainActivity.class);
                 break;
+            case R.id.nav_sign_out:
+                //Signs the user out
+                AuthUI.getInstance()
+                        .signOut(this);
+
+                //Displays a message to the user and closes the Navigation Drawer
+                Toast.makeText(getApplicationContext(), getString(R.string.signed_out), Toast.LENGTH_LONG).show();
+
+                intent = new Intent(getApplicationContext(), MainActivity.class);
+                break;
         }
 
         //Opens the appropriate Activity
         if(intent != null){
             startActivity(intent);
+            finish();
         }
 
-        mDrawerLayout.closeDrawer(GravityCompat.START);
+        closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //Closes the Navigation Drawer
+    protected void closeDrawer(int gravity){
+        mDrawerLayout.closeDrawer(gravity);
     }
 }

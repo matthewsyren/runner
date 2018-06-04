@@ -6,4 +6,8 @@
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- MainActivity -->
+    <dimen name="run_information_text_size">22sp</dimen>
+    <dimen name="run_information_padding">10dp</dimen>
 </resources>

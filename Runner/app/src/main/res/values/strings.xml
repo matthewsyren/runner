@@ -15,7 +15,6 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
     <string name="signed_out">Signed out</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
 
@@ -24,4 +23,10 @@
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="error_no_movement">No movement was detected</string>
+    <string name="run_duration">Duration:</string>
+    <string name="run_distance">Distance:</string>
+    <string name="run_average_speed">Average speed:</string>
+    <string name="metres">%s m</string>
+    <string name="kilometres">%s km</string>
+    <string name="kilometres_per_hour">%s km/h</string>
 </resources>

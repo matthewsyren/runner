@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -35,6 +37,9 @@ import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +49,10 @@ public class MainActivity
         implements OnMapReadyCallback {
     //View bindings
     @BindView(R.id.fab_toggle_run) FloatingActionButton mFabToggleRun;
+    @BindView(R.id.cl_run_information) ConstraintLayout mClRunInformation;
+    @BindView(R.id.tv_run_average_speed) TextView mTvRunAverageSpeed;
+    @BindView(R.id.tv_run_distance) TextView mTvRunDistance;
+    @BindView(R.id.tv_run_duration) TextView mTvRunDuration;
 
     //Variables
     private FirebaseAuth mFirebaseAuth;
@@ -55,6 +64,14 @@ public class MainActivity
     private PolylineOptions mPolylineOptions;
     private LatLngBounds.Builder mLatLngBoundsBuilder;
     private int mLatLngBuilderCount = 0;
+    private double mDistanceTravelled = 0;
+    private int mRunDuration = 0;
+    private Timer mTimer;
+    private Location mPreviousLocation;
+
+    //Time constants
+    private static final int ONE_MINUTE = 60;
+    private static final int ONE_HOUR = 3600;
 
     //Request codes
     private static final int SIGN_IN_REQUEST_CODE = 1;
@@ -235,6 +252,9 @@ public class MainActivity
         //Updates the icon for the FloatingActionButton
         mFabToggleRun.setImageResource(R.drawable.ic_stop_black_24dp);
 
+        //Displays the run information
+        displayRunInformation();
+
         //Sets up the location tracking
         mGoogleMap.setMyLocationEnabled(true);
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -242,6 +262,7 @@ public class MainActivity
         if(mLocationManager != null){
             //Gets current location
             LatLng currentLocation = getCurrentLocation();
+            mPreviousLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
             if(currentLocation != null){
                 //Centers the current location and draws a polyline to the location
@@ -268,6 +289,12 @@ public class MainActivity
                     //Includes the location in the LatLngBoundsBuilder and increments the count
                     mLatLngBoundsBuilder.include(newLocation);
                     mLatLngBuilderCount++;
+
+                    //Updates the distance travelled
+                    if(mPreviousLocation != null){
+                        mDistanceTravelled += location.distanceTo(mPreviousLocation);
+                    }
+                    mPreviousLocation = location;
                 }
 
                 @Override
@@ -291,6 +318,74 @@ public class MainActivity
         }
     }
 
+    //Displays the run's information
+    private void displayRunInformation(){
+        //Displays the run information
+        mClRunInformation.setVisibility(View.VISIBLE);
+
+        /*
+         * Updates the time for the run
+         * Adapted from https://stackoverflow.com/questions/41499362/how-to-display-a-timer-in-a-textview-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Displays the appropriate data
+                        displayRunDuration();
+                        displayRunDistance();
+                        displayRunAverageSpeed();
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
+    //Displays the run duration
+    private void displayRunDuration(){
+        ++mRunDuration;
+        String timeToDisplay;
+
+        //Displays the duration of the run in the appropriate format
+        if(mRunDuration < ONE_HOUR){
+            int minutes = mRunDuration / ONE_MINUTE;
+            int seconds = mRunDuration % ONE_MINUTE;
+            timeToDisplay = String.format(Locale.getDefault(),"%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
+        }
+        else{
+            int hours = mRunDuration / ONE_HOUR;
+            int minutes = (mRunDuration - (hours * ONE_HOUR)) / ONE_MINUTE;
+            int seconds = (mRunDuration - (hours * ONE_HOUR)) % ONE_MINUTE;
+            timeToDisplay = hours + ":" + String.format(Locale.getDefault(), "%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
+        }
+        mTvRunDuration.setText(timeToDisplay);
+    }
+
+    //Displays the run distance
+    private void displayRunDistance(){
+        //Displays the distance travelled with the correct units
+        if(mDistanceTravelled < 1000){
+            String distanceTravelled = String.valueOf(Math.round(mDistanceTravelled));
+            mTvRunDistance.setText(getString(R.string.metres, distanceTravelled));
+        }
+        else{
+            int kilometresTravelled = (int) mDistanceTravelled / 1000;
+            int metresTravelled = (int) mDistanceTravelled % 1000;
+            String kilometresToDisplay = kilometresTravelled + "." + metresTravelled;
+            mTvRunDistance.setText(getString(R.string.kilometres, kilometresToDisplay));
+        }
+    }
+
+    //Displays the average speed
+    private void displayRunAverageSpeed(){
+        //Calculates the speed in km/h
+        double averageSpeed = (mDistanceTravelled / mRunDuration) * 3.6;
+        mTvRunAverageSpeed.setText(getString(R.string.kilometres_per_hour, String.valueOf(Math.round(averageSpeed))));
+    }
+
     //Adds a marker to the specified location
     private void addMarkerToLocation(LatLng location, String markerTitle){
         mGoogleMap.addMarker( new MarkerOptions()
@@ -312,13 +407,20 @@ public class MainActivity
     }
 
     //Stops location tracking
-    private void stopLocationTracking(){
+    private void stopLocationTracking() throws SecurityException{
         LatLng currentLocation = getCurrentLocation();
 
         if(currentLocation != null){
             //Gets the current location and adds a marker to it
             addMarkerToLocation(getCurrentLocation(), getString(R.string.end));
         }
+
+        //Stops the timer
+        mTimer.cancel();
+
+        //Hides the user's location on the map and the run's information
+        mGoogleMap.setMyLocationEnabled(false);
+        mClRunInformation.setVisibility(View.GONE);
 
         //Removes the LocationListener and changes the FloatingActionButton icon
         mLocationManager.removeUpdates(mLocationListener);

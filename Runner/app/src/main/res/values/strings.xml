@@ -29,4 +29,12 @@
     <string name="metres">%s m</string>
     <string name="kilometres">%s km</string>
     <string name="kilometres_per_hour">%s km/h</string>
+    <string name="run_summary">Run summary</string>
+    <string name="save_run_confirmation">Would you like to save this run?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="run_not_saved">Run not saved</string>
+    <string name="run_saved">Run saved successfully</string>
+    <string name="dialog_cancellation_confirmation">Press back again to cancel. Note, if you cancel, your run information will be lost</string>
+    <string name="uploading">Uploading...</string>
 </resources>

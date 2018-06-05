@@ -1,12 +1,16 @@
 package com.matthewsyren.runner;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -16,8 +20,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,12 +37,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,19 +69,21 @@ public class MainActivity
     @BindView(R.id.tv_run_average_speed) TextView mTvRunAverageSpeed;
     @BindView(R.id.tv_run_distance) TextView mTvRunDistance;
     @BindView(R.id.tv_run_duration) TextView mTvRunDuration;
+    @BindView(R.id.pb_run_upload_progress_bar) ProgressBar mPbRunUploadProgressBar;
 
     //Variables
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private GoogleMap mGoogleMap;
     private boolean mIsRunning = false;
+    private boolean mIsBackPressedOnce = false;
     private LocationManager mLocationManager;
     private LocationListener mLocationListener;
     private PolylineOptions mPolylineOptions;
     private LatLngBounds.Builder mLatLngBoundsBuilder;
     private int mLatLngBuilderCount = 0;
     private double mDistanceTravelled = 0;
-    private int mRunDuration = 0;
+    private int mRunDuration = -1;
     private Timer mTimer;
     private Location mPreviousLocation;
 
@@ -214,7 +232,6 @@ public class MainActivity
     private void initialiseMap(){
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mPolylineOptions = new PolylineOptions();
         mLatLngBoundsBuilder = new LatLngBounds.Builder();
     }
 
@@ -251,6 +268,9 @@ public class MainActivity
     private void startLocationTracking() throws SecurityException {
         //Updates the icon for the FloatingActionButton
         mFabToggleRun.setImageResource(R.drawable.ic_stop_black_24dp);
+
+        //Initialises the PolylineOptions
+        mPolylineOptions = new PolylineOptions();
 
         //Displays the run information
         displayRunInformation();
@@ -318,94 +338,6 @@ public class MainActivity
         }
     }
 
-    //Displays the run's information
-    private void displayRunInformation(){
-        //Displays the run information
-        mClRunInformation.setVisibility(View.VISIBLE);
-
-        /*
-         * Updates the time for the run
-         * Adapted from https://stackoverflow.com/questions/41499362/how-to-display-a-timer-in-a-textview-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-         */
-        mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Displays the appropriate data
-                        displayRunDuration();
-                        displayRunDistance();
-                        displayRunAverageSpeed();
-                    }
-                });
-            }
-        }, 0, 1000);
-    }
-
-    //Displays the run duration
-    private void displayRunDuration(){
-        ++mRunDuration;
-        String timeToDisplay;
-
-        //Displays the duration of the run in the appropriate format
-        if(mRunDuration < ONE_HOUR){
-            int minutes = mRunDuration / ONE_MINUTE;
-            int seconds = mRunDuration % ONE_MINUTE;
-            timeToDisplay = String.format(Locale.getDefault(),"%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
-        }
-        else{
-            int hours = mRunDuration / ONE_HOUR;
-            int minutes = (mRunDuration - (hours * ONE_HOUR)) / ONE_MINUTE;
-            int seconds = (mRunDuration - (hours * ONE_HOUR)) % ONE_MINUTE;
-            timeToDisplay = hours + ":" + String.format(Locale.getDefault(), "%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
-        }
-        mTvRunDuration.setText(timeToDisplay);
-    }
-
-    //Displays the run distance
-    private void displayRunDistance(){
-        //Displays the distance travelled with the correct units
-        if(mDistanceTravelled < 1000){
-            String distanceTravelled = String.valueOf(Math.round(mDistanceTravelled));
-            mTvRunDistance.setText(getString(R.string.metres, distanceTravelled));
-        }
-        else{
-            int kilometresTravelled = (int) mDistanceTravelled / 1000;
-            int metresTravelled = (int) mDistanceTravelled % 1000;
-            String kilometresToDisplay = kilometresTravelled + "." + metresTravelled;
-            mTvRunDistance.setText(getString(R.string.kilometres, kilometresToDisplay));
-        }
-    }
-
-    //Displays the average speed
-    private void displayRunAverageSpeed(){
-        //Calculates the speed in km/h
-        double averageSpeed = (mDistanceTravelled / mRunDuration) * 3.6;
-        mTvRunAverageSpeed.setText(getString(R.string.kilometres_per_hour, String.valueOf(Math.round(averageSpeed))));
-    }
-
-    //Adds a marker to the specified location
-    private void addMarkerToLocation(LatLng location, String markerTitle){
-        mGoogleMap.addMarker( new MarkerOptions()
-                .position(location)
-                .title(markerTitle))
-                .showInfoWindow();
-    }
-
-    //Returns the current location in a LatLng object
-    private LatLng getCurrentLocation() throws SecurityException{
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if(location != null){
-            return new LatLng(location.getLatitude(), location.getLongitude());
-        }
-        else{
-            return null;
-        }
-    }
-
     //Stops location tracking
     private void stopLocationTracking() throws SecurityException{
         LatLng currentLocation = getCurrentLocation();
@@ -436,11 +368,112 @@ public class MainActivity
             LatLngBounds bounds = mLatLngBoundsBuilder.build();
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 300);
             mGoogleMap.animateCamera(cameraUpdate);
+
+            //Displays Dialog that asks the user if they'd like to save their run
+            displaySummaryDialog();
         }
         else {
-            //Clears the start marker and tells the user that no movement was detected
+            //Resets the map and tells the user that no movement was detected
             Toast.makeText(getApplicationContext(), getString(R.string.error_no_movement), Toast.LENGTH_LONG).show();
-            mGoogleMap.clear();
+            restartActivity();
+        }
+    }
+
+    //Displays the run's information
+    private void displayRunInformation(){
+        //Displays the run information
+        mClRunInformation.setVisibility(View.VISIBLE);
+
+        /*
+         * Updates the time for the run
+         * Adapted from https://stackoverflow.com/questions/41499362/how-to-display-a-timer-in-a-textview-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Displays the appropriate data
+                        displayRunDuration();
+                        displayRunDistance();
+                        displayRunAverageSpeed();
+                    }
+                });
+            }
+        }, 0, 1000);
+    }
+
+    //Displays the run duration
+    private void displayRunDuration(){
+        ++mRunDuration;
+        mTvRunDuration.setText(getFormattedRunDuration());
+    }
+
+    //Returns a formatted run duration
+    private String getFormattedRunDuration(){
+        //Formats the duration of the run in the appropriate format
+        if(mRunDuration < ONE_HOUR){
+            int minutes = mRunDuration / ONE_MINUTE;
+            int seconds = mRunDuration % ONE_MINUTE;
+            return String.format(Locale.getDefault(),"%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
+        }
+        else{
+            int hours = mRunDuration / ONE_HOUR;
+            int minutes = (mRunDuration - (hours * ONE_HOUR)) / ONE_MINUTE;
+            int seconds = (mRunDuration - (hours * ONE_HOUR)) % ONE_MINUTE;
+            return hours + ":" + String.format(Locale.getDefault(), "%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
+        }
+    }
+
+    //Displays the run distance
+    private void displayRunDistance(){
+        mTvRunDistance.setText(getFormattedRunDistance());
+    }
+
+    //Returns a formatted run distance
+    private String getFormattedRunDistance(){
+        //Formats the distance travelled with the correct units
+        if(mDistanceTravelled < 1000){
+            return getString(R.string.metres, String.valueOf(Math.round(mDistanceTravelled)));
+        }
+        else{
+            int kilometresTravelled = (int) mDistanceTravelled / 1000;
+            int metresTravelled = (int) mDistanceTravelled % 1000;
+            return getString(R.string.kilometres, kilometresTravelled + "." + metresTravelled);
+        }
+    }
+
+    //Displays the average speed
+    private void displayRunAverageSpeed(){
+        mTvRunAverageSpeed.setText(getFormattedRunAverageSpeed());
+    }
+
+    //Returns a formatted run average speed
+    private String getFormattedRunAverageSpeed(){
+        //Calculates the speed in km/h
+        double averageSpeed = (mDistanceTravelled / mRunDuration) * 3.6;
+        return getString(R.string.kilometres_per_hour, String.valueOf(Math.round(averageSpeed)));
+    }
+
+    //Adds a marker to the specified location
+    private void addMarkerToLocation(LatLng location, String markerTitle){
+        mGoogleMap.addMarker( new MarkerOptions()
+                .position(location)
+                .title(markerTitle))
+                .showInfoWindow();
+    }
+
+    //Returns the current location in a LatLng object
+    private LatLng getCurrentLocation() throws SecurityException{
+        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        if(location != null){
+            return new LatLng(location.getLatitude(), location.getLongitude());
+        }
+        else{
+            return null;
         }
     }
 
@@ -468,6 +501,155 @@ public class MainActivity
         }
     }
 
+    /* Displays a Dialog which allows the user to save their run
+     * Adapted from https://developer.android.com/guide/topics/ui/dialogs.html
+     */
+    private void displaySummaryDialog(){
+        //Creates an AlertDialog to ask the user if they'd like to save their run
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.run_summary_popup, null);
+        builder.setView(dialogView);
+
+        //View assignments
+        TextView tvPopupRunDuration = dialogView.findViewById(R.id.tv_popup_run_duration);
+        TextView tvPopupRunDistance = dialogView.findViewById(R.id.tv_popup_run_distance);
+        TextView tvPopupRunAverageSpeed = dialogView.findViewById(R.id.tv_popup_run_average_speed);
+
+        //Performs the appropriate action based on the user's input
+        DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Begins the process of saving the run's information
+                        Toast.makeText(getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_LONG).show();
+                        mPbRunUploadProgressBar.setVisibility(View.VISIBLE);
+                        mFabToggleRun.setVisibility(View.GONE);
+                        saveMapScreenshot();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Toast.makeText(getApplicationContext(), getString(R.string.run_not_saved), Toast.LENGTH_LONG).show();
+
+                        //Restarts the Activity
+                        restartActivity();
+                        break;
+                }
+            }
+        };
+
+        //Displays the information
+        tvPopupRunDuration.setText(getFormattedRunDuration());
+        tvPopupRunDistance.setText(getFormattedRunDistance());
+        tvPopupRunAverageSpeed.setText(getFormattedRunAverageSpeed());
+        builder.setTitle(getString(R.string.run_summary));
+        builder.setPositiveButton(R.string.yes, onClickListener)
+                .setNegativeButton(R.string.no, onClickListener);
+
+        //Displays the Dialog and adds a Listener to require two clicks on the back button to close the Dialog
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                /*
+                 * Makes the user click the back button twice to close the Dialog (to make sure the user doesn't delete their run accidentally)
+                 * Adapted from https://stackoverflow.com/questions/8430805/clicking-the-back-button-twice-to-exit-an-activity?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+                 */
+                if(!mIsBackPressedOnce) {
+                    //Prompts for confirmation
+                    Toast.makeText(getApplicationContext(), getString(R.string.dialog_cancellation_confirmation), Toast.LENGTH_LONG).show();
+                    mIsBackPressedOnce = true;
+                    alertDialog.show();
+                }
+                else{
+                    //Closes the Dialog and resets the map
+                    Toast.makeText(getApplicationContext(), getString(R.string.run_not_saved), Toast.LENGTH_LONG).show();
+                    restartActivity();
+                }
+
+                //Creates a window of 6 seconds when the user can click the back button for a second time
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIsBackPressedOnce = false;
+                    }
+                }, 6000);
+            }
+        });
+        alertDialog.show();
+    }
+
+    //Uploads a screenshot of the map to Firebase Storage
+    private void saveMapScreenshot(){
+        GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+            @Override
+            public void onSnapshotReady(Bitmap bitmap) {
+                //Converts the Bitmap image (screenshot of the map) to a byte array
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream);
+
+                //Generates a unique key for the image
+                final String imageKey = FirebaseDatabase.getInstance()
+                        .getReference()
+                        .push()
+                        .getKey();
+
+                //Saves the image to Firebase Storage (with the name of [image's unique key].jpg)
+                final StorageReference storageReference = FirebaseStorage.getInstance()
+                        .getReference()
+                        .child(imageKey + ".jpg");
+
+                storageReference.putBytes(byteArrayOutputStream.toByteArray())
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                storageReference.getDownloadUrl()
+                                        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(final Uri uri) {
+                                                //Saves the Run details to the Firebase Database once the screenshot has been uploaded
+                                                Date date = new Date();
+                                                String formattedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                                                        .format(date);
+
+                                                //Creates a Run object with the appropriate data
+                                                Run run = new Run(formattedDate, mRunDuration, Math.round(mDistanceTravelled), uri.toString());
+
+                                                //Sends a request to FirebaseService to upload the run's data
+                                                run.requestUpload(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), imageKey, new DataReceiver(new Handler()));
+                                            }
+                                        });
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+            }
+        };
+
+        //Sets a callback for the map
+        mGoogleMap.snapshot(callback);
+    }
+
+    //Restarts the Activity by resetting the appropriate variables
+    private void restartActivity(){
+        //Resets the variables
+        mDistanceTravelled = 0;
+        mRunDuration = -1;
+        mPolylineOptions = null;
+        mGoogleMap.clear();
+        mLatLngBuilderCount = 0;
+
+        //Zooms to last known location
+        if(mPreviousLocation != null){
+            zoomToLocation(new LatLng(mPreviousLocation.getLatitude(), mPreviousLocation.getLongitude()));
+        }
+    }
+
     //Used to retrieve results from the FirebaseService
     private class DataReceiver
             extends ResultReceiver{
@@ -491,6 +673,13 @@ public class MainActivity
                     PreferenceUtilities.setUserKey(getApplicationContext(), key);
                     initialiseMap();
                 }
+            }
+            else if(resultCode == FirebaseService.ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE){
+                //Tells the user that their upload was successful and resets the Activity
+                Toast.makeText(getApplicationContext(), getString(R.string.run_saved), Toast.LENGTH_LONG).show();
+                mPbRunUploadProgressBar.setVisibility(View.GONE);
+                mFabToggleRun.setVisibility(View.VISIBLE);
+                restartActivity();
             }
         }
     }

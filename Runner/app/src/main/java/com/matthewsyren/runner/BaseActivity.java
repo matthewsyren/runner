@@ -9,9 +9,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +48,26 @@ public class BaseActivity
 
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        //Displays the user's details
+        displayUserDetails();
+    }
+
+    //Method displays the user's details in the Navigation Drawer
+    public void displayUserDetails(){
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        View view =  navigationView.getHeaderView(0);
+        TextView tvEmailAddress = view.findViewById(R.id.tv_email_address);
+        TextView tvDisplayName = view.findViewById(R.id.tv_display_name);
+
+        //Displays the data
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance()
+                .getCurrentUser();
+
+        if(firebaseUser != null){
+            tvEmailAddress.setText(firebaseUser.getEmail());
+            tvDisplayName.setText(firebaseUser.getDisplayName());
+        }
     }
 
     //Sets the selected item in the Navigation Drawer

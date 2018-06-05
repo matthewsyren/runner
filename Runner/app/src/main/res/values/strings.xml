@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Runner</string>
     <string name="title_activity_main">Runner</string>
+    <string name="title_activity_runs">My Runs</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_home">Home</string>
@@ -36,5 +37,5 @@
     <string name="run_not_saved">Run not saved</string>
     <string name="run_saved">Run saved successfully</string>
     <string name="dialog_cancellation_confirmation">Press back again to cancel. Note, if you cancel, your run information will be lost</string>
-    <string name="uploading">Uploading...</string>
+    <string name="uploading">Uploading&#8230;</string>
 </resources>

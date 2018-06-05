@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.matthewsyren.runner">
 
     <!--
@@ -32,8 +33,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,5 +44,10 @@
         <activity android:name=".BaseActivity" />
 
         <service android:name=".services.FirebaseService" />
+
+        <activity
+            android:name=".RunsActivity"
+            android:label="@string/title_activity_runs"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 </manifest>

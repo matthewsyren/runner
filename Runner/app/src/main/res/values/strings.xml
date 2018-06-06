@@ -38,4 +38,7 @@
     <string name="run_saved">Run saved successfully</string>
     <string name="dialog_cancellation_confirmation">Press back again to cancel. Note, if you cancel, your run information will be lost</string>
     <string name="uploading">Uploading&#8230;</string>
+    <string name="leave_page_while_running_confirmation">You are currently on a run, if you leave this page now your information about this run will be lost. Do you want to leave this page?</string>
+    <string name="action_cancelled">Action cancelled</string>
+    <string name="back_pressed_during_run_confirmation">Press back again to leave the app. Note, if you leave before saving your run, your run information will be lost</string>
 </resources>

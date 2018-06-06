@@ -90,6 +90,7 @@ public class MainActivity
     //Time constants
     private static final int ONE_MINUTE = 60;
     private static final int ONE_HOUR = 3600;
+    private static final int DOUBLE_BACK_PRESS_TIME_WINDOW = 6000;
 
     //Request codes
     private static final int SIGN_IN_REQUEST_CODE = 1;
@@ -153,25 +154,118 @@ public class MainActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.nav_sign_out){
-            //Signs the user out
-            AuthUI.getInstance()
-                    .signOut(this);
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+        final int id = item.getItemId();
 
-            //Displays a message to the user and closes the Navigation Drawer
-            Toast.makeText(getApplicationContext(), getString(R.string.signed_out), Toast.LENGTH_LONG).show();
-            super.closeDrawer(GravityCompat.START);
-            return true;
+        if(mIsRunning){
+            //Creates an AlertDialog that asks the user to confirm that they want to leave the page while they are on a run
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+            DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            if(id == R.id.nav_sign_out){
+                                //Signs the user out
+                                AuthUI.getInstance()
+                                        .signOut(getApplicationContext());
+
+                                //Resets the Activity
+                                stopLocationTracking(false);
+                                restartActivity();
+                            }
+                            else{
+                                //Sends the click to BaseActivity to handle
+                                handleNavigationDrawerClick(item);
+                            }
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //Keeps the user on this Activity
+                            Toast.makeText(getApplicationContext(), getString(R.string.action_cancelled), Toast.LENGTH_LONG).show();
+
+                            //Sets the selected Navigation Drawer item to home
+                            MainActivity.super.setSelectedNavItem(R.id.nav_home);
+                            break;
+                    }
+                }
+            };
+
+            //Sets the content for the Dialog
+            alertDialogBuilder.setMessage(R.string.leave_page_while_running_confirmation)
+                    .setPositiveButton(R.string.yes, onClickListener)
+                    .setNegativeButton(R.string.no, onClickListener);
+
+            //Displays the Dialog
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    //Sets the selected Navigation Drawer item to home
+                    setSelectedNavItem(R.id.nav_home);
+                }
+            });
+            alertDialog.show();
         }
         else{
-            return super.onNavigationItemSelected(item);
+            switch(id){
+                case R.id.nav_sign_out:
+                    //Signs the user out
+                    AuthUI.getInstance()
+                            .signOut(this);
+
+                    //Resets the Activity
+                    restartActivity();
+
+                    //Displays a message to the user and closes the Navigation Drawer
+                    Toast.makeText(getApplicationContext(), getString(R.string.signed_out), Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    //Sends the click to BaseActivity to handle
+                    return handleNavigationDrawerClick(item);
+            }
         }
+
+        //Closes the Navigation Drawer
+        super.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+    }
+
+    @Override
+    public void onBackPressed() {
+        /*
+         * Makes the user click the back button twice to close the app while running (to make sure the user doesn't delete their run accidentally)
+         * Adapted from https://stackoverflow.com/questions/8430805/clicking-the-back-button-twice-to-exit-an-activity?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        if(mIsRunning){
+            if(mIsBackPressedOnce){
+                super.onBackPressed();
+            }
+            else{
+                Toast.makeText(getApplicationContext(), R.string.back_pressed_during_run_confirmation, Toast.LENGTH_LONG).show();
+                mIsBackPressedOnce = true;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIsBackPressedOnce = false;
+                    }
+                }, DOUBLE_BACK_PRESS_TIME_WINDOW);
+            }
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+    //Sends the click to BaseActivity to handle
+    private boolean handleNavigationDrawerClick(MenuItem item){
+        return super.onNavigationItemSelected(item);
     }
 
     //Checks if the user is signed in, and signs them in if they aren't signed in already
@@ -232,7 +326,6 @@ public class MainActivity
     private void initialiseMap(){
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mLatLngBoundsBuilder = new LatLngBounds.Builder();
     }
 
     //Starts/stops a run
@@ -245,7 +338,7 @@ public class MainActivity
             checkLocationTrackingPermission();
         }
         else {
-            stopLocationTracking();
+            stopLocationTracking(true);
         }
     }
 
@@ -269,8 +362,9 @@ public class MainActivity
         //Updates the icon for the FloatingActionButton
         mFabToggleRun.setImageResource(R.drawable.ic_stop_black_24dp);
 
-        //Initialises the PolylineOptions
+        //Initialises the PolylineOptions and the LatLngBounds Builder
         mPolylineOptions = new PolylineOptions();
+        mLatLngBoundsBuilder = new LatLngBounds.Builder();
 
         //Displays the run information
         displayRunInformation();
@@ -339,7 +433,8 @@ public class MainActivity
     }
 
     //Stops location tracking
-    private void stopLocationTracking() throws SecurityException{
+    private void stopLocationTracking(boolean showDialog) throws SecurityException{
+        mIsRunning = false;
         LatLng currentLocation = getCurrentLocation();
 
         if(currentLocation != null){
@@ -360,7 +455,7 @@ public class MainActivity
         mLocationListener = null;
         mFabToggleRun.setImageResource(R.drawable.ic_baseline_directions_run_24px);
 
-        if(mLatLngBuilderCount > 1){
+        if(mLatLngBuilderCount > 1 && mDistanceTravelled > 0){
             /*
              * Zooms out to display the entire route taken by the user
              * Adapted from https://stackoverflow.com/questions/14828217/android-map-v2-zoom-to-show-all-the-markers?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -369,12 +464,16 @@ public class MainActivity
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 300);
             mGoogleMap.animateCamera(cameraUpdate);
 
-            //Displays Dialog that asks the user if they'd like to save their run
-            displaySummaryDialog();
+            if(showDialog){
+                //Displays Dialog that asks the user if they'd like to save their run
+                displaySummaryDialog();
+            }
         }
         else {
             //Resets the map and tells the user that no movement was detected
-            Toast.makeText(getApplicationContext(), getString(R.string.error_no_movement), Toast.LENGTH_LONG).show();
+            if(showDialog){
+                Toast.makeText(getApplicationContext(), getString(R.string.error_no_movement), Toast.LENGTH_LONG).show();
+            }
             restartActivity();
         }
     }
@@ -506,15 +605,15 @@ public class MainActivity
      */
     private void displaySummaryDialog(){
         //Creates an AlertDialog to ask the user if they'd like to save their run
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.run_summary_popup, null);
-        builder.setView(dialogView);
+        View view = inflater.inflate(R.layout.run_summary_popup, null);
+        alertDialogBuilder.setView(view);
 
         //View assignments
-        TextView tvPopupRunDuration = dialogView.findViewById(R.id.tv_popup_run_duration);
-        TextView tvPopupRunDistance = dialogView.findViewById(R.id.tv_popup_run_distance);
-        TextView tvPopupRunAverageSpeed = dialogView.findViewById(R.id.tv_popup_run_average_speed);
+        TextView tvPopupRunDuration = view.findViewById(R.id.tv_popup_run_duration);
+        TextView tvPopupRunDistance = view.findViewById(R.id.tv_popup_run_distance);
+        TextView tvPopupRunAverageSpeed = view.findViewById(R.id.tv_popup_run_average_speed);
 
         //Performs the appropriate action based on the user's input
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
@@ -542,12 +641,12 @@ public class MainActivity
         tvPopupRunDuration.setText(getFormattedRunDuration());
         tvPopupRunDistance.setText(getFormattedRunDistance());
         tvPopupRunAverageSpeed.setText(getFormattedRunAverageSpeed());
-        builder.setTitle(getString(R.string.run_summary));
-        builder.setPositiveButton(R.string.yes, onClickListener)
+        alertDialogBuilder.setTitle(getString(R.string.run_summary));
+        alertDialogBuilder.setPositiveButton(R.string.yes, onClickListener)
                 .setNegativeButton(R.string.no, onClickListener);
 
         //Displays the Dialog and adds a Listener to require two clicks on the back button to close the Dialog
-        final AlertDialog alertDialog = builder.create();
+        final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
@@ -574,7 +673,7 @@ public class MainActivity
                     public void run() {
                         mIsBackPressedOnce = false;
                     }
-                }, 6000);
+                }, DOUBLE_BACK_PRESS_TIME_WINDOW);
             }
         });
         alertDialog.show();

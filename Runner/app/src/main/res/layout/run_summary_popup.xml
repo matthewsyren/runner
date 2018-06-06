@@ -16,7 +16,7 @@
         android:paddingEnd="@dimen/run_information_padding"
         android:paddingTop="@dimen/run_information_padding"
         android:textAlignment="center"
-        android:text="@string/run_duration" />
+        android:text="@string/run_duration_label" />
 
     <TextView
         android:id="@+id/tv_popup_run_duration"
@@ -41,7 +41,7 @@
         android:paddingEnd="@dimen/run_information_padding"
         android:paddingTop="@dimen/run_information_padding"
         android:textAlignment="center"
-        android:text="@string/run_distance" />
+        android:text="@string/run_distance_label" />
 
     <TextView
         android:id="@+id/tv_popup_run_distance"
@@ -66,7 +66,7 @@
         android:paddingEnd="@dimen/run_information_padding"
         android:paddingTop="@dimen/run_information_padding"
         android:textAlignment="center"
-        android:text="@string/run_average_speed" />
+        android:text="@string/run_average_speed_label" />
 
     <TextView
         android:id="@+id/tv_popup_run_average_speed"

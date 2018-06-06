@@ -14,6 +14,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.matthewsyren.runner.models.Run;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class FirebaseService
         extends IntentService {
     //ResultReceiver
@@ -23,10 +26,14 @@ public class FirebaseService
     public static final String ACTION_GET_USER_KEY = "action_get_user_key";
     public static final int ACTION_GET_USER_KEY_RESULT_CODE = 101;
     public static final String ACTION_UPLOAD_RUN_INFORMATION = "action_upload_run_information";
+    public static final int ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE = 102;
+    public static final String ACTION_GET_RUNS = "action_get_runs";
+    public static final int ACTION_GET_RUNS_RESULT_CODE = 103;
+
+    //Extras
     public static final String RUN_EXTRA = "run_extra";
     public static final String USER_KEY_EXTRA = "user_key_extra";
     public static final String IMAGE_KEY_EXTRA = "image_key_extra";
-    public static final int ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE = 102;
 
     //Variables
     private DatabaseReference mDatabaseReference;
@@ -44,6 +51,7 @@ public class FirebaseService
         if(intent != null){
             mResultReceiver = intent.getParcelableExtra(RESULT_RECEIVER);
             String action = intent.getAction();
+            String userKey;
 
             if(action != null){
                 switch(action){
@@ -53,9 +61,13 @@ public class FirebaseService
                         break;
                     case ACTION_UPLOAD_RUN_INFORMATION:
                         Run run = intent.getParcelableExtra(RUN_EXTRA);
-                        String userKey = intent.getStringExtra(USER_KEY_EXTRA);
+                        userKey = intent.getStringExtra(USER_KEY_EXTRA);
                         String imageKey = intent.getStringExtra(IMAGE_KEY_EXTRA);
                         uploadRunInformation(run, userKey, imageKey);
+                        break;
+                    case ACTION_GET_RUNS:
+                        userKey = intent.getStringExtra(USER_KEY_EXTRA);
+                        getRuns(userKey);
                         break;
                 }
             }
@@ -127,6 +139,38 @@ public class FirebaseService
         returnUploadResult();
     }
 
+    //Fetches an ArrayList of all the runs a user has taken
+    private void getRuns(String userKey){
+        openFirebaseDatabaseConnection();
+        final ArrayList<Run> runs = new ArrayList<>();
+
+        mDatabaseReference = mFirebaseDatabase.getReference()
+                .child(userKey)
+                .child("runs");
+
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //Loops through the runs stored in Firebase and adds them to an ArrayList
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    runs.add(snapshot.getValue(Run.class));
+                }
+
+                //Reverses the ArrayList (so the latest run appears first)
+                Collections.reverse(runs);
+
+                //Removes the EventListener and returns the runs to the appropriate Activity
+                mDatabaseReference.removeEventListener(this);
+                returnRuns(runs);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     //Returns the user's key to the appropriate Activity
     private void returnUserKey(String key){
         Bundle bundle = new Bundle();
@@ -138,5 +182,12 @@ public class FirebaseService
     private void returnUploadResult(){
         Bundle bundle = new Bundle();
         mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, bundle);
+    }
+
+    //Returns the ArrayList of runs to the user
+    private void returnRuns(ArrayList<Run> runs){
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(ACTION_GET_RUNS, runs);
+        mResultReceiver.send(ACTION_GET_RUNS_RESULT_CODE, bundle);
     }
 }

@@ -16,6 +16,10 @@ public class Run
     private double distanceTravelled;
     private String imageUrl;
 
+    public Run(){
+
+    }
+
     public Run(String runDate, int runDuration, double distanceTravelled, String imageUrl) {
         this.runDate = runDate;
         this.runDuration = runDuration;
@@ -79,6 +83,18 @@ public class Run
         bundle.putParcelable(FirebaseService.RUN_EXTRA, this);
         bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
         bundle.putString(FirebaseService.IMAGE_KEY_EXTRA, imageKey);
+        intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
+        intent.putExtras(bundle);
+        context.startService(intent);
+    }
+
+    //Sends the Run to FirebaseService to be uploaded
+    public void requestUserRuns(Context context, String userKey, ResultReceiver resultReceiver){
+        Intent intent = new Intent(context, FirebaseService.class);
+        Bundle bundle = new Bundle();
+        intent.setAction(FirebaseService.ACTION_GET_RUNS);
+        bundle.putParcelable(FirebaseService.RUN_EXTRA, this);
+        bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
         intent.putExtras(bundle);
         context.startService(intent);

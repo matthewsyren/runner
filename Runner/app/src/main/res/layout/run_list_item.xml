@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_run_route"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv_run_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:paddingEnd="@dimen/run_information_padding"
+                android:paddingBottom="@dimen/run_information_padding"
+                tools:ignore="RtlSymmetry" />
+
+            <TextView
+                android:id="@+id/tv_run_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:paddingEnd="@dimen/run_information_padding"
+                android:paddingBottom="@dimen/run_information_padding"
+                android:paddingTop="@dimen/run_information_padding"
+                tools:ignore="RtlSymmetry" />
+
+            <TextView
+                android:id="@+id/tv_run_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:paddingEnd="@dimen/run_information_padding"
+                android:paddingBottom="@dimen/run_information_padding"
+                android:paddingTop="@dimen/run_information_padding"
+                tools:ignore="RtlSymmetry" />
+
+            <TextView
+                android:id="@+id/tv_run_average_speed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorBlack"
+                android:paddingEnd="@dimen/run_information_padding"
+                android:paddingBottom="@dimen/run_information_padding"
+                android:paddingTop="@dimen/run_information_padding"
+                tools:ignore="RtlSymmetry" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/iv_run_route"
+            android:layout_width="@dimen/run_image_width"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/iv_run_route_content_description"/>
+    </android.support.constraint.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/separator_height"
+        android:background="@color/colorGrey"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</android.support.constraint.ConstraintLayout>

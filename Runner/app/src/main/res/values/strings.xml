@@ -24,9 +24,9 @@
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="error_no_movement">No movement was detected</string>
-    <string name="run_duration">Duration:</string>
-    <string name="run_distance">Distance:</string>
-    <string name="run_average_speed">Average speed:</string>
+    <string name="run_duration_label">Duration:</string>
+    <string name="run_distance_label">Distance:</string>
+    <string name="run_average_speed_label">Average speed:</string>
     <string name="metres">%s m</string>
     <string name="kilometres">%s km</string>
     <string name="kilometres_per_hour">%s km/h</string>
@@ -41,4 +41,12 @@
     <string name="leave_page_while_running_confirmation">You are currently on a run, if you leave this page now your information about this run will be lost. Do you want to leave this page?</string>
     <string name="action_cancelled">Action cancelled</string>
     <string name="back_pressed_during_run_confirmation">Press back again to leave the app. Note, if you leave before saving your run, your run information will be lost</string>
+
+    <!-- RunsActivity -->
+    <string name="run_date">Date: %s</string>
+    <string name="run_duration">Duration: %s</string>
+    <string name="run_distance">Distance: %s</string>
+    <string name="run_average_speed">Average speed: %s</string>
+    <string name="no_runs_completed">No runs have been completed yet. You can start a run from the home page&#8230;</string>
+    <string name="iv_run_route_content_description">Displays an image of the route the user took for their run</string>
 </resources>

@@ -10,4 +10,8 @@
     <!-- MainActivity -->
     <dimen name="run_information_text_size">22sp</dimen>
     <dimen name="run_information_padding">10dp</dimen>
+
+    <!-- RunsActivity -->
+    <dimen name="run_image_width">150dp</dimen>
+    <dimen name="separator_height">1dp</dimen>
 </resources>

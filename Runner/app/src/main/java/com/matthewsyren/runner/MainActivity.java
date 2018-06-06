@@ -48,6 +48,7 @@ import com.google.firebase.storage.UploadTask;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -88,8 +89,6 @@ public class MainActivity
     private Location mPreviousLocation;
 
     //Time constants
-    private static final int ONE_MINUTE = 60;
-    private static final int ONE_HOUR = 3600;
     private static final int DOUBLE_BACK_PRESS_TIME_WINDOW = 6000;
 
     //Request codes
@@ -455,7 +454,7 @@ public class MainActivity
         mLocationListener = null;
         mFabToggleRun.setImageResource(R.drawable.ic_baseline_directions_run_24px);
 
-        if(mLatLngBuilderCount > 1 && mDistanceTravelled > 0){
+        if(mLatLngBuilderCount > 1 && mDistanceTravelled >= 1){
             /*
              * Zooms out to display the entire route taken by the user
              * Adapted from https://stackoverflow.com/questions/14828217/android-map-v2-zoom-to-show-all-the-markers?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -507,53 +506,17 @@ public class MainActivity
     //Displays the run duration
     private void displayRunDuration(){
         ++mRunDuration;
-        mTvRunDuration.setText(getFormattedRunDuration());
-    }
-
-    //Returns a formatted run duration
-    private String getFormattedRunDuration(){
-        //Formats the duration of the run in the appropriate format
-        if(mRunDuration < ONE_HOUR){
-            int minutes = mRunDuration / ONE_MINUTE;
-            int seconds = mRunDuration % ONE_MINUTE;
-            return String.format(Locale.getDefault(),"%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
-        }
-        else{
-            int hours = mRunDuration / ONE_HOUR;
-            int minutes = (mRunDuration - (hours * ONE_HOUR)) / ONE_MINUTE;
-            int seconds = (mRunDuration - (hours * ONE_HOUR)) % ONE_MINUTE;
-            return hours + ":" + String.format(Locale.getDefault(), "%02d", minutes) + ":" + String.format(Locale.getDefault(),"%02d", seconds);
-        }
+        mTvRunDuration.setText(RunInformationFormatUtilities.getFormattedRunDuration(mRunDuration));
     }
 
     //Displays the run distance
     private void displayRunDistance(){
-        mTvRunDistance.setText(getFormattedRunDistance());
-    }
-
-    //Returns a formatted run distance
-    private String getFormattedRunDistance(){
-        //Formats the distance travelled with the correct units
-        if(mDistanceTravelled < 1000){
-            return getString(R.string.metres, String.valueOf(Math.round(mDistanceTravelled)));
-        }
-        else{
-            int kilometresTravelled = (int) mDistanceTravelled / 1000;
-            int metresTravelled = (int) mDistanceTravelled % 1000;
-            return getString(R.string.kilometres, kilometresTravelled + "." + metresTravelled);
-        }
+        mTvRunDistance.setText(RunInformationFormatUtilities.getFormattedRunDistance(mDistanceTravelled, this));
     }
 
     //Displays the average speed
     private void displayRunAverageSpeed(){
-        mTvRunAverageSpeed.setText(getFormattedRunAverageSpeed());
-    }
-
-    //Returns a formatted run average speed
-    private String getFormattedRunAverageSpeed(){
-        //Calculates the speed in km/h
-        double averageSpeed = (mDistanceTravelled / mRunDuration) * 3.6;
-        return getString(R.string.kilometres_per_hour, String.valueOf(Math.round(averageSpeed)));
+        mTvRunAverageSpeed.setText(RunInformationFormatUtilities.getFormattedRunAverageSpeed(mDistanceTravelled, mRunDuration, this));
     }
 
     //Adds a marker to the specified location
@@ -638,9 +601,15 @@ public class MainActivity
         };
 
         //Displays the information
-        tvPopupRunDuration.setText(getFormattedRunDuration());
-        tvPopupRunDistance.setText(getFormattedRunDistance());
-        tvPopupRunAverageSpeed.setText(getFormattedRunAverageSpeed());
+        tvPopupRunDuration.setText(RunInformationFormatUtilities
+                .getFormattedRunDuration(mRunDuration));
+
+        tvPopupRunDistance.setText(RunInformationFormatUtilities
+                .getFormattedRunDistance(mDistanceTravelled, this));
+
+        tvPopupRunAverageSpeed.setText(RunInformationFormatUtilities
+                .getFormattedRunAverageSpeed(mDistanceTravelled, mRunDuration, this));
+
         alertDialogBuilder.setTitle(getString(R.string.run_summary));
         alertDialogBuilder.setPositiveButton(R.string.yes, onClickListener)
                 .setNegativeButton(R.string.no, onClickListener);

@@ -39,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:padding="@dimen/run_information_padding"
             android:textAlignment="center"
-            android:text="@string/run_duration" />
+            android:text="@string/run_duration_label" />
 
         <TextView
             android:id="@+id/tv_run_duration"
@@ -69,7 +69,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:padding="@dimen/run_information_padding"
             android:textAlignment="center"
-            android:text="@string/run_distance" />
+            android:text="@string/run_distance_label" />
 
         <TextView
             android:id="@+id/tv_run_distance"
@@ -99,7 +99,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:padding="@dimen/run_information_padding"
             android:textAlignment="center"
-            android:text="@string/run_average_speed" />
+            android:text="@string/run_average_speed_label" />
 
         <TextView
             android:id="@+id/tv_run_average_speed"

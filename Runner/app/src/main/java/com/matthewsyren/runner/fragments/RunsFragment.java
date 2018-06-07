@@ -94,6 +94,14 @@ public class RunsFragment
         mOnItemClickListener = onItemClickListener;
     }
 
+    //Returns the run at the specified position
+    public Run getRunAtPosition(int position){
+        if(mRuns != null && mRuns.size() > position){
+            return mRuns.get(position);
+        }
+        return null;
+    }
+
     //Used to retrieve results from the FirebaseService
     private class DataReceiver
             extends ResultReceiver {

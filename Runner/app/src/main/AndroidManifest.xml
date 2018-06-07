@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.matthewsyren.runner">
 
     <!--
@@ -41,13 +40,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BaseActivity" />
 
-        <service android:name=".services.FirebaseService" />
+        <activity android:name=".BaseActivity" />
 
         <activity
             android:name=".RunsActivity"
             android:label="@string/title_activity_runs"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".RunDetailActivity"
+            android:parentActivityName=".RunsActivity"/>
+
+        <service android:name=".services.FirebaseService" />
     </application>
 </manifest>

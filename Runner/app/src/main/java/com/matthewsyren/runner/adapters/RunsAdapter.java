@@ -98,7 +98,9 @@ public class RunsAdapter
 
         @Override
         public void onClick(View v) {
-            mOnItemClickListener.onItemClick(getAdapterPosition());
+            if(mOnItemClickListener != null) {
+                mOnItemClickListener.onItemClick(getAdapterPosition());
+            }
         }
     }
 }

@@ -49,4 +49,7 @@
     <string name="run_average_speed">Average speed: %s</string>
     <string name="no_runs_completed">No runs have been completed yet. You can start a run from the home page&#8230;</string>
     <string name="iv_run_route_content_description">Displays an image of the route the user took for their run</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

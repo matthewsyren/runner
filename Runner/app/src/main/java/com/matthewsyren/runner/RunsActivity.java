@@ -1,35 +1,17 @@
 package com.matthewsyren.runner;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.support.v4.app.FragmentManager;
 
 import com.matthewsyren.runner.adapters.IRecyclerViewOnItemClickListener;
-import com.matthewsyren.runner.adapters.RunsAdapter;
-import com.matthewsyren.runner.models.Run;
-import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
-
-import java.util.ArrayList;
-
-import butterknife.BindView;
+import com.matthewsyren.runner.fragments.RunsFragment;
 
 public class RunsActivity
         extends BaseActivity
-        implements IRecyclerViewOnItemClickListener {
-    //View bindings
-    @BindView(R.id.rv_runs) RecyclerView mRvRuns;
-    @BindView(R.id.pb_runs) ProgressBar mPbRuns;
-    @BindView(R.id.tv_no_runs_completed) TextView mTvNoRunsCompleted;
-
+        implements IRecyclerViewOnItemClickListener{
     //Variables
-    private ArrayList<Run> mRuns;
-    private static final String RUNS_BUNDLE_KEY = "runs_bundle_key";
+    private boolean mIsFragmentAttached;
+    private static final String IS_FRAGMENT_ATTACHED_BUNDLE_KEY = "is_fragment_attached_bundle_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +19,12 @@ public class RunsActivity
         setContentView(R.layout.activity_runs);
         super.onCreateDrawer();
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
-            //Restores the data
-            mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
-            displayRuns(mRuns);
+        if(savedInstanceState != null && savedInstanceState.containsKey(IS_FRAGMENT_ATTACHED_BUNDLE_KEY)){
+            mIsFragmentAttached = savedInstanceState.getBoolean(IS_FRAGMENT_ATTACHED_BUNDLE_KEY);
         }
-        else{
-            //Requests the data from Firebase
-            new Run().requestUserRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
-        }
+
+        //Attaches the appropriate Fragments
+        attachFragments();
     }
 
     @Override
@@ -60,52 +39,25 @@ public class RunsActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        if(mRuns != null){
-            outState.putParcelableArrayList(RUNS_BUNDLE_KEY, mRuns);
+        outState.putBoolean(IS_FRAGMENT_ATTACHED_BUNDLE_KEY, mIsFragmentAttached);
+    }
+
+    //Attaches the appropriate Fragments to the FrameLayout
+    private void attachFragments() {
+        if(!mIsFragmentAttached){
+            RunsFragment runsFragment = new RunsFragment();
+            runsFragment.setOnItemClickListener(this);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .add(R.id.fl_runs, runsFragment)
+                    .commit();
+
+            mIsFragmentAttached = true;
         }
     }
 
     @Override
     public void onItemClick(int position) {
 
-    }
-
-    //Displays the runs in the RecyclerView
-    private void displayRuns(ArrayList<Run> runs){
-        //Hides the ProgressBar
-        mPbRuns.setVisibility(View.GONE);
-
-        //Displays the runs, or a message if there are no runs completed
-        if(runs != null && runs.size() > 0){
-            RunsAdapter runsAdapter = new RunsAdapter(runs, RunsActivity.this);
-            mRvRuns.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-            mRvRuns.setAdapter(runsAdapter);
-        }
-        else{
-            //Displays a message saying no runs have been completed
-            mTvNoRunsCompleted.setVisibility(View.VISIBLE);
-        }
-    }
-
-    //Used to retrieve results from the FirebaseService
-    private class DataReceiver
-            extends ResultReceiver {
-        //Constructor
-        DataReceiver(Handler handler) {
-            super(handler);
-        }
-
-        //Performs the appropriate action based on the result
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            super.onReceiveResult(resultCode, resultData);
-
-            if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
-                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
-
-                //Displays the runs
-                displayRuns(mRuns);
-            }
-        }
     }
 }

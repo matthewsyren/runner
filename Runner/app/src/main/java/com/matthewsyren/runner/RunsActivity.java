@@ -27,13 +27,25 @@ public class RunsActivity
     @BindView(R.id.pb_runs) ProgressBar mPbRuns;
     @BindView(R.id.tv_no_runs_completed) TextView mTvNoRunsCompleted;
 
+    //Variables
+    private ArrayList<Run> mRuns;
+    private static final String RUNS_BUNDLE_KEY = "runs_bundle_key";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_runs);
         super.onCreateDrawer();
 
-        new Run().requestUserRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+        if(savedInstanceState != null && savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
+            //Restores the data
+            mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
+            displayRuns(mRuns);
+        }
+        else{
+            //Requests the data from Firebase
+            new Run().requestUserRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+        }
     }
 
     @Override
@@ -45,14 +57,39 @@ public class RunsActivity
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if(mRuns != null){
+            outState.putParcelableArrayList(RUNS_BUNDLE_KEY, mRuns);
+        }
+    }
+
+    @Override
     public void onItemClick(int position) {
 
+    }
+
+    //Displays the runs in the RecyclerView
+    private void displayRuns(ArrayList<Run> runs){
+        //Hides the ProgressBar
+        mPbRuns.setVisibility(View.GONE);
+
+        //Displays the runs, or a message if there are no runs completed
+        if(runs != null && runs.size() > 0){
+            RunsAdapter runsAdapter = new RunsAdapter(runs, RunsActivity.this);
+            mRvRuns.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            mRvRuns.setAdapter(runsAdapter);
+        }
+        else{
+            //Displays a message saying no runs have been completed
+            mTvNoRunsCompleted.setVisibility(View.VISIBLE);
+        }
     }
 
     //Used to retrieve results from the FirebaseService
     private class DataReceiver
             extends ResultReceiver {
-
         //Constructor
         DataReceiver(Handler handler) {
             super(handler);
@@ -64,21 +101,10 @@ public class RunsActivity
             super.onReceiveResult(resultCode, resultData);
 
             if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
-                ArrayList<Run> runs = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
+                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
 
-                //Hides the ProgressBar
-                mPbRuns.setVisibility(View.GONE);
-
-                //Displays the runs, or a message if there are no runs completed
-                if(runs != null && runs.size() > 0){
-                    RunsAdapter runsAdapter = new RunsAdapter(runs, RunsActivity.this);
-                    mRvRuns.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-                    mRvRuns.setAdapter(runsAdapter);
-                }
-                else{
-                    //Displays a message saying no runs have been completed
-                    mTvNoRunsCompleted.setVisibility(View.VISIBLE);
-                }
+                //Displays the runs
+                displayRuns(mRuns);
             }
         }
     }

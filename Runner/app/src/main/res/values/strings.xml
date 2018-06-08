@@ -20,7 +20,7 @@
     <string name="sign_in_cancelled">Sign in cancelled</string>
 
     <!-- MainActivity -->
-    <string name="error_permission_not_granted">You need to allow location tracking in order to start a run</string>
+    <string name="error_location_permission_not_granted">You need to allow location tracking in order to start a run</string>
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="error_no_movement">No movement was detected</string>
@@ -49,4 +49,10 @@
     <string name="run_average_speed">Average speed: %s</string>
     <string name="no_runs_completed">No runs have been completed yet. You can start a run from the home page&#8230;</string>
     <string name="iv_run_route_content_description">Displays an image of the route the user took for their run</string>
+
+    <!-- RunDetailFragment -->
+    <string name="share">Share</string>
+    <string name="share_run_introduction">I\'ve just finished a run using Runner! Here it is:\n\n</string>
+    <string name="error_null_bitmap">Please wait for the image to load before sharing the run</string>
+    <string name="error_storage_permission_not_granted">You need to allow the storage permission in order to share a run</string>
 </resources>

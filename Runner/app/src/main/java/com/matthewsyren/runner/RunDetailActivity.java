@@ -22,7 +22,7 @@ public class RunDetailActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         RunDetailFragment runDetailFragment = RunDetailFragment.newInstance(run);
         fragmentManager.beginTransaction()
-                .add(R.id.fl_run_detail, runDetailFragment)
+                .replace(R.id.fl_run_detail, runDetailFragment)
                 .commit();
 
         //Sets the title to the date

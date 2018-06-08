@@ -134,7 +134,7 @@ public class RunsFragment
 
         //Sends the selected run to the appropriate Activity
         if(mOnRunsDownloadedListener != null){
-            if(mRuns.size() > 0){
+            if(mRuns != null && mRuns.size() > 0){
                 mOnRunsDownloadedListener.runsDownloaded(mRuns.get(mSelectedPosition));
             }
             else{

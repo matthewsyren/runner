@@ -147,7 +147,7 @@ public class MainActivity
                 startLocationTracking();
             }
             else{
-                Toast.makeText(getApplicationContext(), getString(R.string.error_permission_not_granted), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.error_location_permission_not_granted), Toast.LENGTH_LONG).show();
             }
         }
     }

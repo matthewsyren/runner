@@ -93,6 +93,11 @@ public class RunsFragment
         //Restores the data
         if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
             mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
+            displayRuns(mRuns);
+        }
+        else{
+            //Requests the data from Firebase
+            new Run().requestUserRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
         }
 
         if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
@@ -112,7 +117,6 @@ public class RunsFragment
                     }
                 });
         }
-        displayRuns(mRuns);
     }
 
     //Displays the runs in the RecyclerView

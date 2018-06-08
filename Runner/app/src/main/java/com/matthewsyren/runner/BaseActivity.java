@@ -98,6 +98,9 @@ public class BaseActivity
             case R.id.nav_runs:
                 intent = new Intent(getApplicationContext(), RunsActivity.class);
                 break;
+            case R.id.nav_statistics:
+                intent = new Intent(getApplicationContext(), StatisticsActivity.class);
+                break;
             case R.id.nav_sign_out:
                 //Signs the user out
                 AuthUI.getInstance()

@@ -55,4 +55,5 @@
     <string name="share_run_introduction">I\'ve just finished a run using Runner! Here it is:\n\n</string>
     <string name="error_null_bitmap">Please wait for the image to load before sharing the run</string>
     <string name="error_storage_permission_not_granted">You need to allow the storage permission in order to share a run</string>
+    <string name="title_activity_statistics">Statistics</string>
 </resources>

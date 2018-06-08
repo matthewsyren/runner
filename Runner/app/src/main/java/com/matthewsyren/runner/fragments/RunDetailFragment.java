@@ -1,6 +1,7 @@
 package com.matthewsyren.runner.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +53,7 @@ public class RunDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Inflates the layout for the Fragment
         View view = inflater.inflate(R.layout.fragment_run_detail, container, false);
@@ -69,17 +70,19 @@ public class RunDetailFragment extends Fragment {
         //Makes the ImageView zoomable
         mIvRunRoute.setOnTouchListener(new ImageMatrixTouchHandler(getContext()));
 
-        //Loads the image
-        Picasso.with(getContext())
-                .load(mRun.getImageUrl())
-                .placeholder(R.color.colorGrey)
-                .into(mIvRunRoute);
+        if(mRun != null){
+            //Loads the image
+            Picasso.with(getContext())
+                    .load(mRun.getImageUrl())
+                    .placeholder(R.color.colorGrey)
+                    .into(mIvRunRoute);
 
-        //Displays the appropriate text
-        mTvRunDuration.setText(RunInformationFormatUtilities.getFormattedRunDuration(mRun.getRunDuration()));
+            //Displays the appropriate text
+            mTvRunDuration.setText(RunInformationFormatUtilities.getFormattedRunDuration(mRun.getRunDuration()));
 
-        mTvRunDistance.setText(RunInformationFormatUtilities.getFormattedRunDistance(mRun.getDistanceTravelled(), getContext()));
+            mTvRunDistance.setText(RunInformationFormatUtilities.getFormattedRunDistance(mRun.getDistanceTravelled(), getContext()));
 
-        mTvRunAverageSpeed.setText(RunInformationFormatUtilities.getFormattedRunAverageSpeed(mRun.getDistanceTravelled(), mRun.getRunDuration(), getContext()));
+            mTvRunAverageSpeed.setText(RunInformationFormatUtilities.getFormattedRunAverageSpeed(mRun.getDistanceTravelled(), mRun.getRunDuration(), getContext()));
+        }
     }
 }

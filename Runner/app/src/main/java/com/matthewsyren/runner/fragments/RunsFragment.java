@@ -26,7 +26,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RunsFragment
-        extends Fragment {
+        extends Fragment
+        implements IRecyclerViewOnItemClickListener {
     //View bindings
     @BindView(R.id.rv_runs)
     RecyclerView mRvRuns;
@@ -39,6 +40,11 @@ public class RunsFragment
     private ArrayList<Run> mRuns;
     private static final String RUNS_BUNDLE_KEY = "runs_bundle_key";
     private IRecyclerViewOnItemClickListener mOnItemClickListener;
+    private IOnRunsDownloadedListener mOnRunsDownloadedListener;
+    private boolean mIsTwoPane = false;
+    private int mSelectedPosition = 0;
+    private static final String SELECTED_POSITION_BUNDLE_KEY = "selected_position_bundle_key";
+    private static final String SCROLL_VIEW_POSITION_BUNDLE_KEY = "scroll_view_position_bundle_key";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,15 +52,14 @@ public class RunsFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflates the layout for the Fragment
         View view = inflater.inflate(R.layout.fragment_runs, container, false);
         ButterKnife.bind(this, view);
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
+        if(savedInstanceState != null){
             //Restores the data
-            mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
-            displayRuns(mRuns);
+            restoreData(savedInstanceState);
         }
         else{
             //Requests the data from Firebase
@@ -71,6 +76,43 @@ public class RunsFragment
         if(mRuns != null){
             outState.putParcelableArrayList(RUNS_BUNDLE_KEY, mRuns);
         }
+
+        outState.putInt(SELECTED_POSITION_BUNDLE_KEY, mSelectedPosition);
+
+        /*
+         * Puts the RecyclerView's scroll information into the Bundle
+         * Adapted from https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        outState.putIntArray(SCROLL_VIEW_POSITION_BUNDLE_KEY, new int[]{
+                mRvRuns.getScrollX(),
+                mRvRuns.getScrollY()});
+    }
+
+    //Restores the data
+    private void restoreData(Bundle savedInstanceState){
+        //Restores the data
+        if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
+            mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
+        }
+
+        if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
+            mSelectedPosition = savedInstanceState.getInt(SELECTED_POSITION_BUNDLE_KEY);
+        }
+
+        /*
+         * Restores the RecyclerViews's scroll position
+         * Adapted from https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+         */
+        if(savedInstanceState.containsKey(SCROLL_VIEW_POSITION_BUNDLE_KEY)){
+            final int[] scrollViewPosition = savedInstanceState.getIntArray(SCROLL_VIEW_POSITION_BUNDLE_KEY);
+            if(scrollViewPosition != null)
+                mRvRuns.post(new Runnable(){
+                    public void run() {
+                        mRvRuns.scrollTo(scrollViewPosition[0], scrollViewPosition[1]);
+                    }
+                });
+        }
+        displayRuns(mRuns);
     }
 
     //Displays the runs in the RecyclerView
@@ -80,7 +122,8 @@ public class RunsFragment
 
         //Displays the runs, or a message if there are no runs completed
         if(runs != null && runs.size() > 0){
-            RunsAdapter runsAdapter = new RunsAdapter(runs, mOnItemClickListener);
+            RunsAdapter runsAdapter = new RunsAdapter(runs, this, mIsTwoPane);
+            runsAdapter.setSelectedPosition(mSelectedPosition);
             mRvRuns.setLayoutManager(new LinearLayoutManager(getContext()));
             mRvRuns.setAdapter(runsAdapter);
         }
@@ -88,10 +131,28 @@ public class RunsFragment
             //Displays a message saying no runs have been completed
             mTvNoRunsCompleted.setVisibility(View.VISIBLE);
         }
+
+        //Sends the selected run to the appropriate Activity
+        if(mOnRunsDownloadedListener != null){
+            if(mRuns.size() > 0){
+                mOnRunsDownloadedListener.runsDownloaded(mRuns.get(mSelectedPosition));
+            }
+            else{
+                mOnRunsDownloadedListener.runsDownloaded(null);
+            }
+        }
     }
 
     public void setOnItemClickListener(IRecyclerViewOnItemClickListener onItemClickListener){
         mOnItemClickListener = onItemClickListener;
+    }
+
+    public void setOnRunsDownloadedListener(IOnRunsDownloadedListener onRunsDownloadedListener){
+        mOnRunsDownloadedListener = onRunsDownloadedListener;
+    }
+
+    public void setIsTwoPane(boolean isTwoPane){
+        mIsTwoPane = isTwoPane;
     }
 
     //Returns the run at the specified position
@@ -100,6 +161,15 @@ public class RunsFragment
             return mRuns.get(position);
         }
         return null;
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        mSelectedPosition = position;
+
+        if(mOnItemClickListener != null){
+            mOnItemClickListener.onItemClick(position);
+        }
     }
 
     //Used to retrieve results from the FirebaseService

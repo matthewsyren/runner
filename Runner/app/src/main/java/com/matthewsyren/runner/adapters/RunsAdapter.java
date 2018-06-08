@@ -2,6 +2,7 @@ package com.matthewsyren.runner.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +21,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class RunsAdapter
-        extends RecyclerView.Adapter<RunsAdapter.RunViewHolder>
-        implements IRecyclerViewOnItemClickListener{
+        extends RecyclerView.Adapter<RunsAdapter.RunViewHolder> {
     private ArrayList<Run> mRuns;
     private IRecyclerViewOnItemClickListener mOnItemClickListener;
+    private boolean mIsTwoPane;
+    private int mSelectedPosition = 0;
 
-    public RunsAdapter(ArrayList<Run> runs, IRecyclerViewOnItemClickListener onItemClickListener){
+    public RunsAdapter(ArrayList<Run> runs, IRecyclerViewOnItemClickListener onItemClickListener, boolean isTwoPane){
         mRuns = runs;
         mOnItemClickListener = onItemClickListener;
+        mIsTwoPane = isTwoPane;
     }
 
     @NonNull
@@ -69,6 +72,18 @@ public class RunsAdapter
                 .load(run.getImageUrl())
                 .placeholder(R.color.colorGrey)
                 .into(holder.ivRunRoute);
+
+        //Changes the colour of the selected item when in two-pane mode
+        if(mIsTwoPane){
+            if(position == mSelectedPosition){
+                holder.mClRunInformationListItem
+                        .setBackgroundColor(context.getColor(R.color.colorAccent));
+            }
+            else{
+                holder.mClRunInformationListItem
+                        .setBackgroundColor(context.getColor(R.color.colorWhite));
+            }
+        }
     }
 
     @Override
@@ -76,14 +91,15 @@ public class RunsAdapter
         return mRuns.size();
     }
 
-    @Override
-    public void onItemClick(int position) {
-        mOnItemClickListener.onItemClick(position);
+    public void setSelectedPosition(int selectedPosition){
+        mSelectedPosition = selectedPosition;
+        notifyDataSetChanged();
     }
 
     class RunViewHolder
             extends RecyclerView.ViewHolder
             implements View.OnClickListener{
+        @BindView(R.id.cl_run_information_list_item) ConstraintLayout mClRunInformationListItem;
         @BindView(R.id.tv_run_date) TextView tvRunDate;
         @BindView(R.id.tv_run_duration) TextView tvRunDuration;
         @BindView(R.id.tv_run_distance) TextView tvRunDistance;
@@ -99,7 +115,9 @@ public class RunsAdapter
         @Override
         public void onClick(View v) {
             if(mOnItemClickListener != null) {
-                mOnItemClickListener.onItemClick(getAdapterPosition());
+                int position = getAdapterPosition();
+                mOnItemClickListener.onItemClick(position);
+                setSelectedPosition(position);
             }
         }
     }

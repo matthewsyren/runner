@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 style="@style/StatisticsCaptionStyle"
-                android:text="@string/run_duration_label"/>
+                android:text="@string/statistics_total_time_spent_running_label"/>
 
             <TextView
                 android:id="@+id/tv_total_time_spent_running"

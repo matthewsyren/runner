@@ -64,4 +64,7 @@
     <string name="statistics_total_distance_travelled_label">Total distance travelled:</string>
     <string name="statistics_average_distance_travelled_label">Average distance per run:</string>
     <string name="statistics_average_speed_label">Average speed:</string>
+
+    <!-- WeeklyGoalsActivity -->
+    <string name="title_activity_weekly_goals">Weekly Goals</string>
 </resources>

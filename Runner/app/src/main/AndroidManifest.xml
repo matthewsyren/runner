@@ -49,10 +49,13 @@
         <activity
             android:name=".RunDetailActivity"
             android:parentActivityName=".RunsActivity" />
-
         <activity
             android:name=".StatisticsActivity"
             android:label="@string/title_activity_statistics"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".WeeklyGoalsActivity"
+            android:label="@string/title_activity_weekly_goals"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <service android:name=".services.FirebaseService" />

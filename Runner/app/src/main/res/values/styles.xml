@@ -20,4 +20,18 @@
         <item name="android:textColor">@color/colorBlack</item>
         <item name="android:textSize">@dimen/run_information_text_size</item>
     </style>
+
+    <style name="RunStatisticsStyle">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textSize">@dimen/run_statistics_height</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginStart">@dimen/run_statistics_margin</item>
+        <item name="android:layout_marginEnd">@dimen/run_statistics_margin</item>
+        <item name="android:layout_marginBottom">@dimen/run_statistics_margin</item>
+    </style>
+
+    <style name="StatisticsCaptionStyle" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_margin">@dimen/statistics_caption_margin</item>
+    </style>
 </resources>

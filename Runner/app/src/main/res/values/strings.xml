@@ -56,4 +56,12 @@
     <string name="error_null_bitmap">Please wait for the image to load before sharing the run</string>
     <string name="error_storage_permission_not_granted">You need to allow the storage permission in order to share a run</string>
     <string name="title_activity_statistics">Statistics</string>
+
+    <!-- StatisticsActivity -->
+    <string name="statistics_total_number_of_runs_label">Total number of runs:</string>
+    <string name="statistics_total_time_spent_running_label">Total time spent running:</string>
+    <string name="statistics_average_run_duration_label">Average run duration:</string>
+    <string name="statistics_total_distance_travelled_label">Total distance travelled:</string>
+    <string name="statistics_average_distance_travelled_label">Average distance per run:</string>
+    <string name="statistics_average_speed_label">Average speed:</string>
 </resources>

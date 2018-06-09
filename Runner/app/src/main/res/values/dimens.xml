@@ -14,4 +14,10 @@
     <!-- RunsActivity -->
     <dimen name="run_image_width">150dp</dimen>
     <dimen name="separator_size">1dp</dimen>
+
+    <!-- StatisticsActivity -->
+    <dimen name="run_statistics_height">26sp</dimen>
+    <dimen name="run_statistics_margin">16dp</dimen>
+    <dimen name="statistics_scroll_view_padding">16dp</dimen>
+    <dimen name="statistics_caption_margin">6dp</dimen>
 </resources>

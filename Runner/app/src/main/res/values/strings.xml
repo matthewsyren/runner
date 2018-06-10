@@ -67,4 +67,11 @@
 
     <!-- WeeklyGoalsActivity -->
     <string name="title_activity_weekly_goals">Weekly Goals</string>
+    <string name="save">Save</string>
+    <string name="target_kmh">Target (km/h)</string>
+    <string name="target_km">Target (km)</string>
+    <string name="target_mins">Target (mins)</string>
+    <string name="distance_travelled">Distance travelled:</string>
+    <string name="time_spent_running">Time spent running:</string>
+    <string name="average_speed">Average speed:</string>
 </resources>

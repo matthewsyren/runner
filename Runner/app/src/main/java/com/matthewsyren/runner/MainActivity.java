@@ -570,7 +570,7 @@ public class MainActivity
         //Creates an AlertDialog to ask the user if they'd like to save their run
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.run_summary_popup, null);
+        View view = inflater.inflate(R.layout.dialog_run_summary, null);
         alertDialogBuilder.setView(view);
 
         //View assignments

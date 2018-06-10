@@ -1,7 +1,13 @@
 package com.matthewsyren.runner.models;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.ResultReceiver;
+
+import com.matthewsyren.runner.services.FirebaseService;
 
 public class Target
         implements Parcelable {
@@ -18,6 +24,14 @@ public class Target
         this.durationTarget = durationTarget;
         this.averageSpeedTarget = averageSpeedTarget;
     }
+
+    //Creates a default Target object (used if the user hasn't set any targets yet)
+    public Target(){
+        consecutiveTargetsMet = 0;
+        dateOfLastMetTarget = "";
+        distanceTarget = 21;
+        durationTarget = 180;
+        averageSpeedTarget = 7;
     }
 
     Target(Parcel in) {
@@ -73,5 +87,15 @@ public class Target
         dest.writeInt(durationTarget);
         dest.writeInt(averageSpeedTarget);
     }
+
+    //Requests the user's targets from Firebase
+    public void requestTargets(Context context, String userKey, ResultReceiver resultReceiver){
+        Intent intent = new Intent(context, FirebaseService.class);
+        Bundle bundle = new Bundle();
+        intent.setAction(FirebaseService.ACTION_GET_TARGETS);
+        bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
+        intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
+        intent.putExtras(bundle);
+        context.startService(intent);
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,169 +9,183 @@
     tools:context=".WeeklyGoalsActivity"
     tools:showIn="@layout/app_bar_weekly_goals"
     android:layout_margin="@dimen/activity_horizontal_margin">
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/sv_weekly_goals"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/tv_distance_target_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/tv_distance_target"
-                style="@style/TextAppearance.AppCompat.Caption"
-                app:layout_constraintStart_toStartOf="@id/pb_distance_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_distance_target"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/distance_travelled"/>
-
-            <TextView
-                android:id="@+id/tv_distance_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/pb_distance_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_distance_target"
-                app:layout_constraintTop_toBottomOf="@id/tv_distance_target_label"
-                style="@style/RunInformationStyle" />
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_distance_target"
-                android:layout_width="@dimen/target_edit_text_width"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/pb_distance_target" >
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/et_distance_target"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/target_km"
-                    android:textSize="@dimen/target_edit_text_text_size"
-                    android:inputType="number" />
-            </android.support.design.widget.TextInputLayout>
-
-            <ProgressBar
-                android:id="@+id/pb_distance_target"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                app:layout_constraintTop_toBottomOf="@+id/tv_distance_target"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/til_distance_target"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
+        android:visibility="gone">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/weekly_goals_margin">
-            <TextView
-                android:id="@+id/tv_duration_target_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/tv_duration_target"
-                style="@style/TextAppearance.AppCompat.Caption"
-                app:layout_constraintStart_toStartOf="@id/pb_duration_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_duration_target"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/time_spent_running"/>
-
-            <TextView
-                android:id="@+id/tv_duration_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/pb_duration_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_duration_target"
-                app:layout_constraintTop_toBottomOf="@id/tv_duration_target_label"
-                style="@style/RunInformationStyle" />
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_duration_target"
-                android:layout_width="@dimen/target_edit_text_width"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/pb_duration_target" >
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/et_duration_target"
-                    android:layout_width="match_parent"
+            android:orientation="vertical">
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_distance_target_label"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="@string/target_mins"
-                    android:textSize="@dimen/target_edit_text_text_size"
-                    android:inputType="number" />
-            </android.support.design.widget.TextInputLayout>
+                    app:layout_constraintBottom_toTopOf="@id/tv_distance_target"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintStart_toStartOf="@id/pb_distance_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_distance_target"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/distance_travelled"/>
 
-            <ProgressBar
-                android:id="@+id/pb_duration_target"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                app:layout_constraintTop_toBottomOf="@+id/tv_duration_target"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/til_duration_target"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/weekly_goals_margin">
-            <TextView
-                android:id="@+id/tv_average_speed_target_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/tv_average_speed_target"
-                style="@style/TextAppearance.AppCompat.Caption"
-                app:layout_constraintStart_toStartOf="@id/pb_average_speed_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_average_speed_target"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/average_speed"/>
-
-            <TextView
-                android:id="@+id/tv_average_speed_target"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="@id/pb_average_speed_target"
-                app:layout_constraintEnd_toEndOf="@id/pb_average_speed_target"
-                app:layout_constraintTop_toBottomOf="@id/tv_average_speed_target_label"
-                style="@style/RunInformationStyle" />
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/til_average_speed_target"
-                android:layout_width="@dimen/target_edit_text_width"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="@id/pb_average_speed_target" >
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/et_average_speed_target"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tv_distance_target"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="@string/target_km"
-                    android:textSize="@dimen/target_edit_text_text_size"
-                    android:inputType="number" />
-            </android.support.design.widget.TextInputLayout>
+                    app:layout_constraintStart_toStartOf="@id/pb_distance_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_distance_target"
+                    app:layout_constraintTop_toBottomOf="@id/tv_distance_target_label"
+                    style="@style/RunInformationStyle" />
 
-            <ProgressBar
-                android:id="@+id/pb_average_speed_target"
-                android:layout_width="0dp"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_distance_target"
+                    android:layout_width="@dimen/target_edit_text_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/pb_distance_target" >
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_distance_target"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/target_km"
+                        android:textSize="@dimen/target_edit_text_text_size"
+                        android:inputType="number" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pb_distance_target"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="false"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_distance_target"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/til_distance_target"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:indeterminate="false"
-                app:layout_constraintTop_toBottomOf="@+id/tv_average_speed_target"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/til_average_speed_target"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
-        </android.support.constraint.ConstraintLayout>
+                android:layout_marginTop="@dimen/weekly_goals_margin">
+                <TextView
+                    android:id="@+id/tv_duration_target_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@id/tv_duration_target"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintStart_toStartOf="@id/pb_duration_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_duration_target"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/time_spent_running"/>
 
-        <TextView
-            android:id="@+id/tv_consecutive_targets_met"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:textColor="@color/colorBlack"
-            android:textSize="@dimen/consecutive_targets_met_text_size" />
-    </LinearLayout>
-</ScrollView>
+                <TextView
+                    android:id="@+id/tv_duration_target"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/pb_duration_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_duration_target"
+                    app:layout_constraintTop_toBottomOf="@id/tv_duration_target_label"
+                    style="@style/RunInformationStyle" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_duration_target"
+                    android:layout_width="@dimen/target_edit_text_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/pb_duration_target" >
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_duration_target"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/target_mins"
+                        android:textSize="@dimen/target_edit_text_text_size"
+                        android:inputType="number" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pb_duration_target"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="false"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_duration_target"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/til_duration_target"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/weekly_goals_margin">
+                <TextView
+                    android:id="@+id/tv_average_speed_target_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@id/tv_average_speed_target"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintStart_toStartOf="@id/pb_average_speed_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_average_speed_target"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/average_speed"/>
+
+                <TextView
+                    android:id="@+id/tv_average_speed_target"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="@id/pb_average_speed_target"
+                    app:layout_constraintEnd_toEndOf="@id/pb_average_speed_target"
+                    app:layout_constraintTop_toBottomOf="@id/tv_average_speed_target_label"
+                    style="@style/RunInformationStyle" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_average_speed_target"
+                    android:layout_width="@dimen/target_edit_text_width"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/pb_average_speed_target" >
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/et_average_speed_target"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/target_km"
+                        android:textSize="@dimen/target_edit_text_text_size"
+                        android:inputType="number" />
+                </android.support.design.widget.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pb_average_speed_target"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="false"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_average_speed_target"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/til_average_speed_target"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"/>
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tv_consecutive_targets_met"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textColor="@color/colorBlack"
+                android:textSize="@dimen/consecutive_targets_met_text_size" />
+        </LinearLayout>
+    </ScrollView>
+    <ProgressBar
+        android:id="@+id/pb_weekly_goals"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</android.support.constraint.ConstraintLayout>

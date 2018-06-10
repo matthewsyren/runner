@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.design.widget.TextInputEditText;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -65,6 +67,17 @@ public class WeeklyGoalsActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.mi_save){
+            saveTargets();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -84,6 +97,36 @@ public class WeeklyGoalsActivity
         //Hides the ProgressBar and displays the ScrollView
         mSvWeeklyGoals.setVisibility(View.VISIBLE);
         mPbWeeklyGoals.setVisibility(View.GONE);
+    }
+
+    //Uploads the user's new targets
+    private void saveTargets() {
+        //Checks that all EditTexts have data inputted
+        if(TextUtils.isEmpty(mEtDurationTarget.getText().toString())){
+            Toast.makeText(getApplicationContext(), R.string.error_no_duration_target, Toast.LENGTH_LONG).show();
+            mEtDurationTarget.requestFocus();
+        }
+        else if(TextUtils.isEmpty(mEtDistanceTarget.getText().toString())){
+            Toast.makeText(getApplicationContext(), R.string.error_no_distance_target, Toast.LENGTH_LONG).show();
+            mEtDistanceTarget.requestFocus();
+        }
+        else if(TextUtils.isEmpty(mEtAverageSpeedTarget.getText().toString())){
+            Toast.makeText(getApplicationContext(), R.string.error_no_average_speed_target, Toast.LENGTH_LONG).show();
+            mEtAverageSpeedTarget.requestFocus();
+        }
+        else{
+            //Displays the Progress Bar and hides the other Views
+            mPbWeeklyGoals.setVisibility(View.VISIBLE);
+            mSvWeeklyGoals.setVisibility(View.GONE);
+
+            //Updates the values
+            mTarget.setDistanceTarget(Integer.parseInt(mEtDistanceTarget.getText().toString()));
+            mTarget.setDurationTarget(Integer.parseInt(mEtDurationTarget.getText().toString()));
+            mTarget.setAverageSpeedTarget(Integer.parseInt(mEtAverageSpeedTarget.getText().toString()));
+
+            //Sends the updated targets to Firebase
+            mTarget.updateTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+        }
     }
 
     //Used to retrieve results from the FirebaseService
@@ -110,6 +153,13 @@ public class WeeklyGoalsActivity
                     Toast.makeText(getApplicationContext(), getString(R.string.error_no_weekly_targets_fetched), Toast.LENGTH_LONG).show();
                     mPbWeeklyGoals.setVisibility(View.GONE);
                 }
+            }
+            else if(resultCode == FirebaseService.ACTION_UPDATE_TARGETS_RESULT_CODE){
+                Toast.makeText(getApplicationContext(), R.string.targets_successfully_updated, Toast.LENGTH_LONG).show();
+
+                //Hides the Progress Bar and displays the other Views
+                mPbWeeklyGoals.setVisibility(View.GONE);
+                mSvWeeklyGoals.setVisibility(View.VISIBLE);
             }
         }
     }

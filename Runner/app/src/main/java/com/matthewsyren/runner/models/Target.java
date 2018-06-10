@@ -74,6 +74,26 @@ public class Target
         return averageSpeedTarget;
     }
 
+    public void setConsecutiveTargetsMet(int consecutiveTargetsMet) {
+        this.consecutiveTargetsMet = consecutiveTargetsMet;
+    }
+
+    public void setDateOfLastMetTarget(String dateOfLastMetTarget) {
+        this.dateOfLastMetTarget = dateOfLastMetTarget;
+    }
+
+    public void setDistanceTarget(int distanceTarget) {
+        this.distanceTarget = distanceTarget;
+    }
+
+    public void setDurationTarget(int durationTarget) {
+        this.durationTarget = durationTarget;
+    }
+
+    public void setAverageSpeedTarget(int averageSpeedTarget) {
+        this.averageSpeedTarget = averageSpeedTarget;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -94,6 +114,18 @@ public class Target
         Bundle bundle = new Bundle();
         intent.setAction(FirebaseService.ACTION_GET_TARGETS);
         bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
+        intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
+        intent.putExtras(bundle);
+        context.startService(intent);
+    }
+
+    //Uploads the user's new targets
+    public void updateTargets(Context context, String userKey, ResultReceiver resultReceiver){
+        Intent intent = new Intent(context, FirebaseService.class);
+        Bundle bundle = new Bundle();
+        intent.setAction(FirebaseService.ACTION_UPDATE_TARGETS);
+        bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
+        bundle.putParcelable(FirebaseService.TARGET_EXTRA, this);
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
         intent.putExtras(bundle);
         context.startService(intent);

@@ -32,9 +32,12 @@ public class FirebaseService
     public static final int ACTION_GET_RUNS_RESULT_CODE = 103;
     public static final String ACTION_GET_TARGETS = "action_get_user_targets";
     public static final int ACTION_GET_TARGETS_RESULT_CODE = 104;
+    public static final String ACTION_UPDATE_TARGETS = "action_update_targets";
+    public static final int ACTION_UPDATE_TARGETS_RESULT_CODE = 105;
 
     //Extras
     public static final String RUN_EXTRA = "run_extra";
+    public static final String TARGET_EXTRA = "target_extra";
     public static final String USER_KEY_EXTRA = "user_key_extra";
     public static final String IMAGE_KEY_EXTRA = "image_key_extra";
 
@@ -75,6 +78,12 @@ public class FirebaseService
                     case ACTION_GET_TARGETS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
                         getTargets(userKey);
+                        break;
+                    case ACTION_UPDATE_TARGETS:
+                        userKey = intent.getStringExtra(USER_KEY_EXTRA);
+                        Target target = intent.getParcelableExtra(TARGET_EXTRA);
+                        updateTargets(target, userKey);
+                        break;
                 }
             }
         }
@@ -142,7 +151,7 @@ public class FirebaseService
                 .setValue(run);
 
         //Marks upload as complete
-        returnUploadResult();
+        returnRunUploadResult();
     }
 
     //Fetches an ArrayList of all the runs a user has taken
@@ -208,6 +217,21 @@ public class FirebaseService
         });
     }
 
+    //Updates the user's targets
+    private void updateTargets(Target target, String userKey){
+        openFirebaseDatabaseConnection();
+
+        mDatabaseReference = mFirebaseDatabase.getReference()
+                .child(userKey)
+                .child("targets");
+
+        //Updates the user's weekly targets
+        mDatabaseReference.setValue(target);
+
+        //Returns control to the appropriate Activity
+        returnTargetUpdateResult();
+    }
+
     //Returns the user's key to the appropriate Activity
     private void returnUserKey(String key){
         Bundle bundle = new Bundle();
@@ -216,9 +240,8 @@ public class FirebaseService
     }
 
     //Informs the appropriate Activity that the upload was successful
-    private void returnUploadResult(){
-        Bundle bundle = new Bundle();
-        mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, bundle);
+    private void returnRunUploadResult(){
+        mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, null);
     }
 
     //Returns the ArrayList of runs to the user
@@ -233,5 +256,10 @@ public class FirebaseService
         Bundle bundle = new Bundle();
         bundle.putParcelable(ACTION_GET_TARGETS, target);
         mResultReceiver.send(ACTION_GET_TARGETS_RESULT_CODE, bundle);
+    }
+
+    //Informs the appropriate Activity that the updating of the user's targets was successful
+    private void returnTargetUpdateResult(){
+        mResultReceiver.send(ACTION_UPDATE_TARGETS_RESULT_CODE, null);
     }
 }

@@ -76,4 +76,8 @@
     <string name="average_speed">Average speed:</string>
     <string name="consecutive_targets_met">Consecutive targets met: %d</string>
     <string name="error_no_weekly_targets_fetched">An error occurred while fetching your targets, please try again</string>
+    <string name="error_no_duration_target">Please set a time target</string>
+    <string name="error_no_distance_target">Please set a distance target</string>
+    <string name="error_no_average_speed_target">Please set an average speed target</string>
+    <string name="targets_successfully_updated">Targets successfully updated</string>
 </resources>

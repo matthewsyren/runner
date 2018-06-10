@@ -81,7 +81,7 @@ public class StatisticsActivity
         mPbRuns.setVisibility(View.INVISIBLE);
 
         //Calculates the statistics if the user has taken runs before, or displays a message to the user saying they haven't taken any runs
-        if(runs != null){
+        if(runs != null && runs.size() > 0){
             mTotalNumberOfRuns = runs.size();
 
             //Loops through the user's runs and calculates the totals

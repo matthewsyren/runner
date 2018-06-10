@@ -9,14 +9,15 @@ public class Target
     private String dateOfLastMetTarget;
     private int distanceTarget;
     private int durationTarget;
-    private int speedTarget;
+    private int averageSpeedTarget;
 
-    public Target(int consecutiveTargetsMet, String dateOfLastMetTarget, int distanceTarget, int durationTarget, int speedTarget) {
+    public Target(int consecutiveTargetsMet, String dateOfLastMetTarget, int distanceTarget, int durationTarget, int averageSpeedTarget) {
         this.consecutiveTargetsMet = consecutiveTargetsMet;
         this.dateOfLastMetTarget = dateOfLastMetTarget;
         this.distanceTarget = distanceTarget;
         this.durationTarget = durationTarget;
-        this.speedTarget = speedTarget;
+        this.averageSpeedTarget = averageSpeedTarget;
+    }
     }
 
     Target(Parcel in) {
@@ -24,7 +25,7 @@ public class Target
         dateOfLastMetTarget = in.readString();
         distanceTarget = in.readInt();
         durationTarget = in.readInt();
-        speedTarget = in.readInt();
+        averageSpeedTarget = in.readInt();
     }
 
     public static final Creator<Target> CREATOR = new Creator<Target>() {
@@ -55,8 +56,8 @@ public class Target
         return durationTarget;
     }
 
-    public int getSpeedTarget() {
-        return speedTarget;
+    public int getAverageSpeedTarget() {
+        return averageSpeedTarget;
     }
 
     @Override
@@ -70,6 +71,7 @@ public class Target
         dest.writeString(dateOfLastMetTarget);
         dest.writeInt(distanceTarget);
         dest.writeInt(durationTarget);
-        dest.writeInt(speedTarget);
+        dest.writeInt(averageSpeedTarget);
+    }
     }
 }

@@ -26,4 +26,9 @@
     <dimen name="consecutive_targets_met_text_size">22sp</dimen>
     <dimen name="target_edit_text_width">90dp</dimen>
     <dimen name="target_edit_text_text_size">18sp</dimen>
+
+    <!-- WeeklyGoalsWidget -->
+    <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_min_height">180dp</dimen>
+    <dimen name="widget_min_width">250dp</dimen>
 </resources>

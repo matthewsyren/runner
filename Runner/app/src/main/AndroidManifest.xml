@@ -56,8 +56,18 @@
         <activity
             android:name=".WeeklyGoalsActivity"
             android:label="@string/title_activity_weekly_goals"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".services.FirebaseService" />
+
+        <receiver android:name=".widget.WeeklyGoalsWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weekly_goals_widget_info" />
+        </receiver>
     </application>
 </manifest>

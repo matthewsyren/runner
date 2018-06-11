@@ -11,7 +11,10 @@ public class RunInformationFormatUtilities {
     private static final int ONE_MINUTE = 60;
     private static final int ONE_HOUR = 3600;
 
-    //Returns a formatted run duration
+    /**
+     * Returns a formatted run duration
+     * @param runDuration The time taken in minutes
+     */
     public static String getFormattedRunDuration(int runDuration){
         //Formats the duration of the run in the appropriate format
         if(runDuration < ONE_HOUR){
@@ -27,7 +30,10 @@ public class RunInformationFormatUtilities {
         }
     }
 
-    //Returns a formatted run distance
+    /**
+     * Returns a formatted run distance
+     * @param distanceTravelled The distance travelled in metres
+     */
     public static String getFormattedRunDistance(double distanceTravelled, Context context){
         //Formats the distance travelled with the correct units
         if(distanceTravelled < 1000){
@@ -40,12 +46,20 @@ public class RunInformationFormatUtilities {
         }
     }
 
-    //Returns the user's average speed in kilometres per hour
+    /**
+     * Returns the user's average speed in kilometres per hour
+     * @param totalDistance The distance travelled in metres
+     * @param totalDuration The time taken in minutes
+     */
     public static double getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
         return totalDistance / totalDuration * 3.6;
     }
 
-    //Returns a formatted run average speed
+    /**
+     * Returns a formatted run average speed
+     * @param distanceTravelled The distance travelled in metres
+     * @param runDuration The time taken in minutes
+     */
     public static String getFormattedRunAverageSpeed(double distanceTravelled, int runDuration, Context context){
         //Calculates the speed in km/h
         return context.getString(

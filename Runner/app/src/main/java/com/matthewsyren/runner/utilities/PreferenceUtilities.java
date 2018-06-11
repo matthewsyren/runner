@@ -7,13 +7,18 @@ import android.preference.PreferenceManager;
 public class PreferenceUtilities {
     private static final String USER_KEY = "user_key";
 
-    //Returns the user's unique key (which is stored in SharedPreferences)
+    /**
+     * Returns the user's unique key (which is stored in SharedPreferences)
+     */
     public static String getUserKey(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getString(USER_KEY, null);
     }
 
-    //Saves the user's unique key in SharedPreferences
+    /**
+     * Saves the user's unique key in SharedPreferences
+     * @param key The user's unique key for Firebase
+     */
     public static void setUserKey(Context context, String key){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();

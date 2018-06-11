@@ -76,7 +76,11 @@ public class Run
         dest.writeString(imageUrl);
     }
 
-    //Sends the Run to FirebaseService to be uploaded
+    /**
+     * Sends the Run to FirebaseService to be uploaded
+     * @param userKey The user's unique key for Firebase
+     * @param imageKey The unique key generated when an image is uplaoded
+     */
     public void requestUpload(Context context, String userKey, String imageKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();
@@ -89,7 +93,10 @@ public class Run
         context.startService(intent);
     }
 
-    //Sends the Run to FirebaseService to be uploaded
+    /**
+     * Requests all runs that the user has done
+     * @param userKey The user's unique key for Firebase
+     */
     public void requestRuns(Context context, String userKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();
@@ -102,7 +109,10 @@ public class Run
         context.startService(intent);
     }
 
-    //Sends the Run to FirebaseService to be uploaded
+    /**
+     * Requests the runs that the user has completed for the current week
+     * @param userKey The user's unique key for Firebase
+     */
     public void requestRunsForWeek(Context context, String userKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();

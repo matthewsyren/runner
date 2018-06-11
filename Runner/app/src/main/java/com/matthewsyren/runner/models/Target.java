@@ -108,7 +108,10 @@ public class Target
         dest.writeInt(averageSpeedTarget);
     }
 
-    //Requests the user's targets from Firebase
+    /**
+     * Requests the user's targets from Firebase
+     * @param userKey The user's unique key for Firebase
+     */
     public void requestTargets(Context context, String userKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();
@@ -119,7 +122,10 @@ public class Target
         context.startService(intent);
     }
 
-    //Uploads the user's new targets
+    /**
+     * Uploads the user's new targets
+     * @param userKey The user's unique key for Firebase
+     */
     public void updateTargets(Context context, String userKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();

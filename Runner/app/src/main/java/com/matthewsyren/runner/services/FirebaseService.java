@@ -92,12 +92,16 @@ public class FirebaseService
         }
     }
 
-    //Connects to Firebase Database and Storage
+    /**
+     * Connects to Firebase Database
+     */
     private void openFirebaseDatabaseConnection(){
         mFirebaseDatabase = FirebaseDatabase.getInstance();
     }
 
-    //Gets the user's unique key from the Firebase Database, or generates one if the user doesn't have one
+    /**
+     * Gets the user's unique key from the Firebase Database, or generates one if the user doesn't have one
+     */
     private void getUserKey(final String emailAddress){
         openFirebaseDatabaseConnection();
 
@@ -143,7 +147,12 @@ public class FirebaseService
         });
     }
 
-    //Uploads the user's run information to the Firebase Database
+    /**
+     * Uploads the user's run information to the Firebase Database
+     * @param run The run to be uploaded
+     * @param userKeyExtra The user's unique key for Firebase
+     * @param imageKey The unique key generated when the image was uploaded
+     */
     private void uploadRunInformation(Run run, String userKeyExtra, String imageKey){
         openFirebaseDatabaseConnection();
 
@@ -157,7 +166,11 @@ public class FirebaseService
         returnRunUploadResult();
     }
 
-    //Fetches an ArrayList of all the runs a user has taken (you can pass in a date range to get specific runs, or pass in null to get all runs)
+    /**
+     * Fetches an ArrayList of all the runs a user has taken
+     * @param userKey The user's unique key for Firebase
+     * @param dates The date range for the runs (pass in a date range with the format yyyy-MM-dd to get specific runs, or pass in null to get all runs)
+     */
     private void getRuns(String userKey, final String[] dates){
         openFirebaseDatabaseConnection();
         final ArrayList<Run> runs = new ArrayList<>();
@@ -194,7 +207,10 @@ public class FirebaseService
         });
     }
 
-    //Fetches a the user's targets from Firebase
+    /**
+     * Fetches a the user's targets from Firebase
+     * @param userKey The user's unique key for Firebase
+     */
     private void getTargets(String userKey){
         openFirebaseDatabaseConnection();
 
@@ -225,7 +241,11 @@ public class FirebaseService
         });
     }
 
-    //Updates the user's targets
+    /**
+     * Updates the user's targets
+     * @param target The target to be uploaded
+     * @param userKey The user's unique key for Firebase
+     */
     private void updateTargets(Target target, String userKey){
         openFirebaseDatabaseConnection();
 
@@ -240,33 +260,43 @@ public class FirebaseService
         returnTargetUpdateResult();
     }
 
-    //Returns the user's key to the appropriate Activity
+    /**
+     * Returns the user's key to the appropriate Activity
+     */
     private void returnUserKey(String key){
         Bundle bundle = new Bundle();
         bundle.putString(ACTION_GET_USER_KEY, key);
         mResultReceiver.send(ACTION_GET_USER_KEY_RESULT_CODE, bundle);
     }
 
-    //Informs the appropriate Activity that the upload was successful
+    /**
+     * Informs the appropriate Activity that the upload was successful
+     */
     private void returnRunUploadResult(){
         mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, null);
     }
 
-    //Returns the ArrayList of runs to the user
+    /**
+     * Returns the ArrayList of runs to the user
+     */
     private void returnRuns(ArrayList<Run> runs){
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(ACTION_GET_RUNS, runs);
         mResultReceiver.send(ACTION_GET_RUNS_RESULT_CODE, bundle);
     }
 
-    //Returns the targets to the user
+    /**
+     * Returns the targets to the user
+     */
     private void returnTargets(Target target){
         Bundle bundle = new Bundle();
         bundle.putParcelable(ACTION_GET_TARGETS, target);
         mResultReceiver.send(ACTION_GET_TARGETS_RESULT_CODE, bundle);
     }
 
-    //Informs the appropriate Activity that the updating of the user's targets was successful
+    /**
+     * Informs the appropriate Activity that the updating of the user's targets was successful
+     */
     private void returnTargetUpdateResult(){
         mResultReceiver.send(ACTION_UPDATE_TARGETS_RESULT_CODE, null);
     }

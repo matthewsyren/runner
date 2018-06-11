@@ -6,13 +6,18 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateUtilities {
-    //Formats the given date to a yyyy-MM-dd format
+    /**
+     * Formats the given date to a yyyy-MM-dd format
+     * @param date The date that is to be formatted
+     */
     public static String formatDate(Date date){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return simpleDateFormat.format(date);
     }
 
-    //Gets all dates for the current week and returns them as a String array
+    /**
+     * Gets all dates for the current week and returns them as a String array
+     */
     public static String[] getDatesForCurrentWeek(){
         String[] dates = new String[7];
 

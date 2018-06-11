@@ -12,8 +12,6 @@
     <string name="nav_sign_out">Sign out</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="signed_out">Signed out</string>
@@ -71,13 +69,16 @@
     <string name="target_kmh">Target (km/h)</string>
     <string name="target_km">Target (km)</string>
     <string name="target_mins">Target (mins)</string>
-    <string name="distance_travelled">Distance travelled:</string>
-    <string name="time_spent_running">Time spent running:</string>
-    <string name="average_speed">Average speed:</string>
+    <string name="distance_travelled">Distance travelled (km):</string>
+    <string name="time_spent_running">Time spent running (mins):</string>
+    <string name="average_speed">Average speed (km/h):</string>
     <string name="consecutive_targets_met">Consecutive targets met: %d</string>
     <string name="error_no_weekly_targets_fetched">An error occurred while fetching your targets, please try again</string>
     <string name="error_no_duration_target">Please set a time target</string>
     <string name="error_no_distance_target">Please set a distance target</string>
     <string name="error_no_average_speed_target">Please set an average speed target</string>
     <string name="targets_successfully_updated">Targets successfully updated</string>
+    <string name="distance_target_progress">%d/%d</string>
+    <string name="duration_target_progress">%d/%d</string>
+    <string name="average_speed_target_progress">%d/%d</string>
 </resources>

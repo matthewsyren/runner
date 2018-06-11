@@ -14,9 +14,13 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 
@@ -26,13 +30,18 @@ public class WeeklyGoalsActivity
     @BindView(R.id.et_duration_target) TextInputEditText mEtDurationTarget;
     @BindView(R.id.et_distance_target) TextInputEditText mEtDistanceTarget;
     @BindView(R.id.et_average_speed_target) TextInputEditText mEtAverageSpeedTarget;
+    @BindView(R.id.tv_duration_target) TextView mTvDurationTarget;
+    @BindView(R.id.tv_distance_target) TextView mTvDistanceTarget;
+    @BindView(R.id.tv_average_speed_target) TextView mTvAverageSpeedTarget;
     @BindView(R.id.tv_consecutive_targets_met) TextView mTvConsecutiveTargetsMet;
     @BindView(R.id.sv_weekly_goals) ScrollView mSvWeeklyGoals;
     @BindView(R.id.pb_weekly_goals) ProgressBar mPbWeeklyGoals;
 
     //Variables
     private Target mTarget;
+    private ArrayList<Run> mRuns;
     private static final String TARGET_BUNDLE_KEY = "target_bundle_key";
+    private static final String RUNS_BUNDLE_KEY = "runs_bundle_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +49,14 @@ public class WeeklyGoalsActivity
         setContentView(R.layout.activity_weekly_goals);
         super.onCreateDrawer();
 
-        if(savedInstanceState != null && savedInstanceState.containsKey(TARGET_BUNDLE_KEY)){
-            //Restores the targets and displays them
-            mTarget = savedInstanceState.getParcelable(TARGET_BUNDLE_KEY);
-            displayTargets(mTarget);
+        if(savedInstanceState != null){
+            //Restores the data
+            restoreData(savedInstanceState);
         }
         else{
-            //Requests the targets from Firebase
+            //Requests the targets and runs for the week from Firebase
             new Target().requestTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Run().requestRunsForWeek(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -71,6 +80,7 @@ public class WeeklyGoalsActivity
         int id = item.getItemId();
 
         if(id == R.id.mi_save){
+            //Saves the user's new targets
             saveTargets();
             return true;
         }
@@ -83,6 +93,40 @@ public class WeeklyGoalsActivity
 
         if(mTarget != null){
             outState.putParcelable(TARGET_BUNDLE_KEY, mTarget);
+        }
+
+        if(mRuns != null){
+            outState.putParcelableArrayList(RUNS_BUNDLE_KEY, mRuns);
+        }
+    }
+
+    //Restores the data
+    private void restoreData(Bundle savedInstanceState){
+        if(savedInstanceState.containsKey(TARGET_BUNDLE_KEY)){
+            //Restores the targets and displays them
+            mTarget = savedInstanceState.getParcelable(TARGET_BUNDLE_KEY);
+
+            if(mTarget != null){
+                displayTargets(mTarget);
+            }
+        }
+        else{
+            //Requests the user's targets from Firebase
+            new Target().requestTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+        }
+
+        if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
+            //Restores the user's runs
+            mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
+
+            //Displays the user's progress
+            if(mRuns != null && mTarget != null){
+                displayProgress(mRuns);
+            }
+        }
+        else{
+            //Requests the user's runs for the week from Firebase
+            new Run().requestRunsForWeek(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -129,6 +173,24 @@ public class WeeklyGoalsActivity
         }
     }
 
+    //Calculates the user's progress towards their targets and displays it
+    private void displayProgress(ArrayList<Run> runs){
+        int totalDistance = 0;
+        int totalDuration = 0;
+
+        //Calculates the totals
+        for(Run run : runs){
+            totalDistance += run.getDistanceTravelled();
+            totalDuration += run.getRunDuration();
+        }
+
+        //Displays the user's progress towards their targets
+        int averageSpeed = (int) Math.round(RunInformationFormatUtilities.getUsersAverageSpeed(totalDistance, totalDuration));
+        mTvDistanceTarget.setText(getString(R.string.distance_target_progress, totalDistance, mTarget.getDistanceTarget()));
+        mTvDurationTarget.setText(getString(R.string.duration_target_progress, totalDuration, mTarget.getDurationTarget()));
+        mTvAverageSpeedTarget.setText(getString(R.string.average_speed_target_progress, averageSpeed, mTarget.getAverageSpeedTarget()));
+    }
+
     //Used to retrieve results from the FirebaseService
     private class DataReceiver
             extends ResultReceiver {
@@ -148,18 +210,30 @@ public class WeeklyGoalsActivity
 
                 if(mTarget != null){
                     displayTargets(mTarget);
+
+                    if(mRuns != null){
+                        //Displays the user's progress towards their targets
+                        displayProgress(mRuns);
+                    }
                 }
                 else{
                     Toast.makeText(getApplicationContext(), getString(R.string.error_no_weekly_targets_fetched), Toast.LENGTH_LONG).show();
                     mPbWeeklyGoals.setVisibility(View.GONE);
                 }
             }
+            else if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
+                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
+
+                if(mTarget != null && mRuns != null){
+                    //Displays the user's progress towards their targets
+                    displayProgress(mRuns);
+                }
+            }
             else if(resultCode == FirebaseService.ACTION_UPDATE_TARGETS_RESULT_CODE){
                 Toast.makeText(getApplicationContext(), R.string.targets_successfully_updated, Toast.LENGTH_LONG).show();
 
-                //Hides the Progress Bar and displays the other Views
-                mPbWeeklyGoals.setVisibility(View.GONE);
-                mSvWeeklyGoals.setVisibility(View.VISIBLE);
+                //Updates the targets
+                new Target().requestTargets(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), this);
             }
         }
     }

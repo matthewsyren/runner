@@ -47,14 +47,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
+import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -678,8 +677,7 @@ public class MainActivity
                                             public void onSuccess(final Uri uri) {
                                                 //Saves the Run details to the Firebase Database once the screenshot has been uploaded
                                                 Date date = new Date();
-                                                String formattedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                                        .format(date);
+                                                String formattedDate = DateUtilities.formatDate(date);
 
                                                 //Creates a Run object with the appropriate data
                                                 Run run = new Run(formattedDate, mRunDuration, Math.round(mDistanceTravelled), uri.toString());

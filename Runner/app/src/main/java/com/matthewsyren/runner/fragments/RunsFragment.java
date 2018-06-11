@@ -63,7 +63,7 @@ public class RunsFragment
         }
         else{
             //Requests the data from Firebase
-            new Run().requestUserRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+            new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
         }
 
         return view;
@@ -97,7 +97,7 @@ public class RunsFragment
         }
         else{
             //Requests the data from Firebase
-            new Run().requestUserRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+            new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
         }
 
         if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){

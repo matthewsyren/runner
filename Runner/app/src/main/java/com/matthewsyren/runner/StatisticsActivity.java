@@ -54,7 +54,7 @@ public class StatisticsActivity
         }
         else{
             //Fetches the runs for the user from Firebase
-            new Run().requestUserRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Run().requestRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -116,7 +116,7 @@ public class StatisticsActivity
 
         mTvAverageSpeed.setText(RunInformationFormatUtilities.getFormattedRunAverageSpeed(mTotalDistanceTravelled, mTotalTimeSpentRunning, this));
 
-        //Sets the visibility of the ScrollView to true
+        //Displays the ScrollView
         mSvStatistics.setVisibility(View.VISIBLE);
     }
 

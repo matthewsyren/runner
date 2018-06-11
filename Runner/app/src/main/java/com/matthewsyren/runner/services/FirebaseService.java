@@ -16,6 +16,7 @@ import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class FirebaseService
@@ -40,6 +41,7 @@ public class FirebaseService
     public static final String TARGET_EXTRA = "target_extra";
     public static final String USER_KEY_EXTRA = "user_key_extra";
     public static final String IMAGE_KEY_EXTRA = "image_key_extra";
+    public static final String DATES_EXTRA = "dates_extra";
 
     //Variables
     private DatabaseReference mDatabaseReference;
@@ -73,7 +75,8 @@ public class FirebaseService
                         break;
                     case ACTION_GET_RUNS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
-                        getRuns(userKey);
+                        String[] dates = intent.getStringArrayExtra(DATES_EXTRA);
+                        getRuns(userKey, dates);
                         break;
                     case ACTION_GET_TARGETS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
@@ -154,8 +157,8 @@ public class FirebaseService
         returnRunUploadResult();
     }
 
-    //Fetches an ArrayList of all the runs a user has taken
-    private void getRuns(String userKey){
+    //Fetches an ArrayList of all the runs a user has taken (you can pass in a date range to get specific runs, or pass in null to get all runs)
+    private void getRuns(String userKey, final String[] dates){
         openFirebaseDatabaseConnection();
         final ArrayList<Run> runs = new ArrayList<>();
 
@@ -168,7 +171,12 @@ public class FirebaseService
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //Loops through the runs stored in Firebase and adds them to an ArrayList
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    runs.add(snapshot.getValue(Run.class));
+                    Run run = snapshot.getValue(Run.class);
+
+                    //Adds the run to the runs ArrayList if the date is within the specified date range or if no dates are passed in
+                    if(run != null && (dates == null || Arrays.asList(dates).contains(run.getRunDate()))){
+                        runs.add(run);
+                    }
                 }
 
                 //Reverses the ArrayList (so the latest run appears first)

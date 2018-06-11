@@ -40,14 +40,16 @@ public class RunInformationFormatUtilities {
         }
     }
 
-    //Returns the user's average speed
-    public static double getUsersAverageSpeed(double totalDistance, int totalDuration){
+    //Returns the user's average speed in kilometres per hour
+    public static double getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
         return totalDistance / totalDuration * 3.6;
     }
 
     //Returns a formatted run average speed
     public static String getFormattedRunAverageSpeed(double distanceTravelled, int runDuration, Context context){
         //Calculates the speed in km/h
-        return context.getString(R.string.kilometres_per_hour, String.valueOf(Math.round(getUsersAverageSpeed(distanceTravelled, runDuration))));
+        return context.getString(
+                R.string.kilometres_per_hour,
+                String.valueOf(Math.round(getUsersAverageSpeedInKilometresPerHour(distanceTravelled, runDuration))));
     }
 }

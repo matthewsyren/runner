@@ -1,5 +1,6 @@
 package com.matthewsyren.runner;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -36,6 +37,9 @@ public class WeeklyGoalsActivity
     @BindView(R.id.tv_consecutive_targets_met) TextView mTvConsecutiveTargetsMet;
     @BindView(R.id.sv_weekly_goals) ScrollView mSvWeeklyGoals;
     @BindView(R.id.pb_weekly_goals) ProgressBar mPbWeeklyGoals;
+    @BindView(R.id.pb_distance_target) ProgressBar mPbDistanceTarget;
+    @BindView(R.id.pb_duration_target) ProgressBar mPbDurationTarget;
+    @BindView(R.id.pb_average_speed_target) ProgressBar mPbAverageSpeedTarget;
 
     //Variables
     private Target mTarget;
@@ -159,7 +163,7 @@ public class WeeklyGoalsActivity
             mEtAverageSpeedTarget.requestFocus();
         }
         else{
-            //Displays the Progress Bar and hides the other Views
+            //Displays the ProgressBar and hides the other Views
             mPbWeeklyGoals.setVisibility(View.VISIBLE);
             mSvWeeklyGoals.setVisibility(View.GONE);
 
@@ -175,7 +179,7 @@ public class WeeklyGoalsActivity
 
     //Calculates the user's progress towards their targets and displays it
     private void displayProgress(ArrayList<Run> runs){
-        int totalDistance = 0;
+        double totalDistance = 0;
         int totalDuration = 0;
 
         //Calculates the totals
@@ -184,11 +188,64 @@ public class WeeklyGoalsActivity
             totalDuration += run.getRunDuration();
         }
 
+        //Calculates the user's average speed
+        int averageSpeed = (int) Math.round(RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration));
+
+        //Converts the totalDistance to kilometres
+        totalDistance /= 1000;
+
         //Displays the user's progress towards their targets
-        int averageSpeed = (int) Math.round(RunInformationFormatUtilities.getUsersAverageSpeed(totalDistance, totalDuration));
         mTvDistanceTarget.setText(getString(R.string.distance_target_progress, totalDistance, mTarget.getDistanceTarget()));
         mTvDurationTarget.setText(getString(R.string.duration_target_progress, totalDuration, mTarget.getDurationTarget()));
         mTvAverageSpeedTarget.setText(getString(R.string.average_speed_target_progress, averageSpeed, mTarget.getAverageSpeedTarget()));
+
+        //Displays the user's progress towards their targets in the ProgressBars
+        displayProgressInProgressBars(totalDistance, totalDuration, averageSpeed);
+    }
+
+    //Displays the user's progress towards their targets in the ProgressBars
+    private void displayProgressInProgressBars(double totalDistance, int totalDuration, int averageSpeed){
+        //Displays the user's progress in the ProgressBars with the appropriate colours (green if the target has been met, otherwise the accent colour)
+        if(mTarget.getDistanceTarget() > 0){
+            int progress = (int)(totalDistance / mTarget.getDistanceTarget() * 100);
+            setProgressBarColour(progress, mPbDistanceTarget);
+        }
+        else{
+            setProgressBarColour(100, mPbDistanceTarget);
+        }
+
+        if(mTarget.getDurationTarget() > 0){
+            int progress = (int)((double)totalDuration / mTarget.getDurationTarget() * 100);
+            setProgressBarColour(progress, mPbDurationTarget);
+        }
+        else{
+            setProgressBarColour(100, mPbDurationTarget);
+        }
+
+        if(mTarget.getAverageSpeedTarget() > 0){
+            int progress = (int)((double)averageSpeed / mTarget.getAverageSpeedTarget() * 100);
+            setProgressBarColour(progress, mPbAverageSpeedTarget);
+        }
+        else{
+            setProgressBarColour(100, mPbAverageSpeedTarget);
+        }
+    }
+
+    //Sets the passed in ProgressBar's colour based on the user's progress (green if the progress is 100, otherwise the app's accent colour)
+    private void setProgressBarColour(int progress, ProgressBar progressBar){
+        //Increases the ProgressBar's height
+        progressBar.setScaleY(3);
+
+        //Sets the progress and colour of the ProgressBar
+        progressBar.setProgress(progress);
+        if(progress == 100){
+            progressBar.getProgressDrawable()
+                    .setColorFilter(getColor(R.color.colorGreen), PorterDuff.Mode.SRC_IN);
+        }
+        else{
+            progressBar.getProgressDrawable()
+                    .setColorFilter(getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+        }
     }
 
     //Used to retrieve results from the FirebaseService

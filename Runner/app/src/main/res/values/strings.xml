@@ -78,7 +78,7 @@
     <string name="error_no_distance_target">Please set a distance target</string>
     <string name="error_no_average_speed_target">Please set an average speed target</string>
     <string name="targets_successfully_updated">Targets successfully updated</string>
-    <string name="distance_target_progress">%d/%d</string>
+    <string name="distance_target_progress">%#.3f/%d</string>
     <string name="duration_target_progress">%d/%d</string>
     <string name="average_speed_target_progress">%d/%d</string>
 </resources>

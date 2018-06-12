@@ -13,7 +13,7 @@ public class RunInformationFormatUtilities {
 
     /**
      * Returns a formatted run duration
-     * @param runDuration The time taken in minutes
+     * @param runDuration The time taken in seconds
      */
     public static String getFormattedRunDuration(int runDuration){
         //Formats the duration of the run in the appropriate format
@@ -49,21 +49,21 @@ public class RunInformationFormatUtilities {
     /**
      * Returns the user's average speed in kilometres per hour
      * @param totalDistance The distance travelled in metres
-     * @param totalDuration The time taken in minutes
+     * @param totalDuration The time taken in seconds
      */
-    public static double getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
-        return totalDistance / totalDuration * 3.6;
+    public static int getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
+        return (int) Math.round((totalDistance / totalDuration * 3.6));
     }
 
     /**
      * Returns a formatted run average speed
      * @param distanceTravelled The distance travelled in metres
-     * @param runDuration The time taken in minutes
+     * @param runDuration The time taken in seconds
      */
     public static String getFormattedRunAverageSpeed(double distanceTravelled, int runDuration, Context context){
         //Calculates the speed in km/h
         return context.getString(
                 R.string.kilometres_per_hour,
-                String.valueOf(Math.round(getUsersAverageSpeedInKilometresPerHour(distanceTravelled, runDuration))));
+                String.valueOf(getUsersAverageSpeedInKilometresPerHour(distanceTravelled, runDuration)));
     }
 }

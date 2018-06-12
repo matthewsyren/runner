@@ -271,7 +271,7 @@ public class FirebaseService
      */
     private void returnUserKey(String key){
         Bundle bundle = new Bundle();
-        bundle.putString(ACTION_GET_USER_KEY, key);
+        bundle.putString(USER_KEY_EXTRA, key);
         mResultReceiver.send(ACTION_GET_USER_KEY_RESULT_CODE, bundle);
     }
 
@@ -287,7 +287,7 @@ public class FirebaseService
      */
     private void returnRuns(ArrayList<Run> runs){
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(ACTION_GET_RUNS, runs);
+        bundle.putParcelableArrayList(RUNS_EXTRA, runs);
         mResultReceiver.send(ACTION_GET_RUNS_RESULT_CODE, bundle);
     }
 

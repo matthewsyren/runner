@@ -135,7 +135,7 @@ public class StatisticsActivity
             super.onReceiveResult(resultCode, resultData);
 
             if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
-                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
+                mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
                 calculateStatistics(mRuns);
             }
         }

@@ -732,7 +732,7 @@ public class MainActivity
 
             if(resultCode == FirebaseService.ACTION_GET_USER_KEY_RESULT_CODE){
                 //Gets the user's key
-                String key = resultData.getString(FirebaseService.ACTION_GET_USER_KEY);
+                String key = resultData.getString(FirebaseService.USER_KEY_EXTRA);
 
                 if(key != null){
                     //Saves the key to SharedPreferences and initialises the map

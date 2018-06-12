@@ -190,7 +190,7 @@ public class RunsFragment
             super.onReceiveResult(resultCode, resultData);
 
             if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
-                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
+                mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
 
                 //Displays the runs
                 displayRuns(mRuns);

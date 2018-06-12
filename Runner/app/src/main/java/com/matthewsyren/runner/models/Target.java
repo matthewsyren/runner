@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import android.os.ResultReceiver;
 
 import com.matthewsyren.runner.services.FirebaseService;
+import com.matthewsyren.runner.utilities.DateUtilities;
 
 public class Target
         implements Parcelable {
@@ -112,12 +113,13 @@ public class Target
      * Requests the user's targets from Firebase
      * @param userKey The user's unique key for Firebase
      */
-    public void requestTargets(Context context, String userKey, ResultReceiver resultReceiver){
+    public void requestTargetsAndRuns(Context context, String userKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);
         Bundle bundle = new Bundle();
-        intent.setAction(FirebaseService.ACTION_GET_TARGETS);
+        intent.setAction(FirebaseService.ACTION_GET_TARGETS_AND_RUNS);
         bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
+        intent.putExtra(FirebaseService.DATES_EXTRA, DateUtilities.getDatesForCurrentWeek());
         intent.putExtras(bundle);
         context.startService(intent);
     }

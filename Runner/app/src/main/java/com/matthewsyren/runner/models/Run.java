@@ -8,7 +8,6 @@ import android.os.Parcelable;
 import android.os.ResultReceiver;
 
 import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.DateUtilities;
 
 public class Run
         implements Parcelable{
@@ -103,23 +102,6 @@ public class Run
         intent.setAction(FirebaseService.ACTION_GET_RUNS);
         bundle.putParcelable(FirebaseService.RUN_EXTRA, this);
         bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
-        bundle.putStringArray(FirebaseService.DATES_EXTRA, null);
-        intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
-        intent.putExtras(bundle);
-        context.startService(intent);
-    }
-
-    /**
-     * Requests the runs that the user has completed for the current week
-     * @param userKey The user's unique key for Firebase
-     */
-    public void requestRunsForWeek(Context context, String userKey, ResultReceiver resultReceiver){
-        Intent intent = new Intent(context, FirebaseService.class);
-        Bundle bundle = new Bundle();
-        intent.setAction(FirebaseService.ACTION_GET_RUNS);
-        bundle.putParcelable(FirebaseService.RUN_EXTRA, this);
-        bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
-        bundle.putStringArray(FirebaseService.DATES_EXTRA, DateUtilities.getDatesForCurrentWeek());
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
         intent.putExtras(bundle);
         context.startService(intent);

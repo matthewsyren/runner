@@ -31,8 +31,8 @@ public class FirebaseService
     public static final int ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE = 102;
     public static final String ACTION_GET_RUNS = "action_get_runs";
     public static final int ACTION_GET_RUNS_RESULT_CODE = 103;
-    public static final String ACTION_GET_TARGETS = "action_get_user_targets";
-    public static final int ACTION_GET_TARGETS_RESULT_CODE = 104;
+    public static final String ACTION_GET_TARGETS_AND_RUNS = "action_get_targets_and_runs";
+    public static final int ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE = 104;
     public static final String ACTION_UPDATE_TARGETS = "action_update_targets";
     public static final int ACTION_UPDATE_TARGETS_RESULT_CODE = 105;
 
@@ -42,6 +42,7 @@ public class FirebaseService
     public static final String USER_KEY_EXTRA = "user_key_extra";
     public static final String IMAGE_KEY_EXTRA = "image_key_extra";
     public static final String DATES_EXTRA = "dates_extra";
+    public static final String RUNS_EXTRA = "runs_extra";
 
     //Variables
     private DatabaseReference mDatabaseReference;
@@ -75,12 +76,12 @@ public class FirebaseService
                         break;
                     case ACTION_GET_RUNS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
-                        String[] dates = intent.getStringArrayExtra(DATES_EXTRA);
-                        getRuns(userKey, dates);
+                        getRuns(userKey);
                         break;
-                    case ACTION_GET_TARGETS:
+                    case ACTION_GET_TARGETS_AND_RUNS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
-                        getTargets(userKey);
+                        String[] dates = intent.getStringArrayExtra(DATES_EXTRA);
+                        getTargetsAndRuns(userKey, dates);
                         break;
                     case ACTION_UPDATE_TARGETS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
@@ -108,7 +109,7 @@ public class FirebaseService
         mDatabaseReference = mFirebaseDatabase.getReference()
                 .child("users");
 
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String key = null;
@@ -131,9 +132,6 @@ public class FirebaseService
                                 .setValue(emailAddress);
                     }
                 }
-
-                //Removes the EventListener
-                mDatabaseReference.removeEventListener(this);
 
                 //Returns the result
                 returnUserKey(key);
@@ -169,9 +167,8 @@ public class FirebaseService
     /**
      * Fetches an ArrayList of all the runs a user has taken
      * @param userKey The user's unique key for Firebase
-     * @param dates The date range for the runs (pass in a date range with the format yyyy-MM-dd to get specific runs, or pass in null to get all runs)
      */
-    private void getRuns(String userKey, final String[] dates){
+    private void getRuns(String userKey){
         openFirebaseDatabaseConnection();
         final ArrayList<Run> runs = new ArrayList<>();
 
@@ -179,24 +176,18 @@ public class FirebaseService
                 .child(userKey)
                 .child("runs");
 
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //Loops through the runs stored in Firebase and adds them to an ArrayList
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Run run = snapshot.getValue(Run.class);
-
-                    //Adds the run to the runs ArrayList if the date is within the specified date range or if no dates are passed in
-                    if(run != null && (dates == null || Arrays.asList(dates).contains(run.getRunDate()))){
-                        runs.add(run);
-                    }
+                    runs.add(snapshot.getValue(Run.class));
                 }
 
                 //Reverses the ArrayList (so the latest run appears first)
                 Collections.reverse(runs);
 
-                //Removes the EventListener and returns the runs to the appropriate Activity
-                mDatabaseReference.removeEventListener(this);
+                //Returns the runs to the appropriate Activity
                 returnRuns(runs);
             }
 
@@ -208,30 +199,45 @@ public class FirebaseService
     }
 
     /**
-     * Fetches a the user's targets from Firebase
+     * Fetches a the user's targets and their runs for the week from Firebase
      * @param userKey The user's unique key for Firebase
+     * @param dates The date range for the runs (pass in a date range with the format yyyy-MM-dd)
      */
-    private void getTargets(String userKey){
+    private void getTargetsAndRuns(String userKey, final String[] dates){
         openFirebaseDatabaseConnection();
 
         mDatabaseReference = mFirebaseDatabase.getReference()
-                .child(userKey)
-                .child("targets");
+                .child(userKey);
 
-        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Target target = dataSnapshot.getValue(Target.class);
+                //Gets the user's targets for the week
+                DataSnapshot targetSnapshot = dataSnapshot.child("targets");
+                Target target = targetSnapshot
+                        .getValue(Target.class);
 
+                //Creates default targets for the user if they haven't set any yet
                 if(target == null){
-                    //Creates default targets for the user if they haven't set any yet
                     target = new Target();
                     mDatabaseReference.setValue(target);
                 }
 
-                //Removes the ValueEventListener and sends the Target back to the appropriate Activity
-                mDatabaseReference.removeEventListener(this);
-                returnTargets(target);
+                ArrayList<Run> runs = new ArrayList<>();
+                DataSnapshot runsSnapshot = dataSnapshot.child("runs");
+
+                //Fetches the user's runs for the week and adds them to the runs ArrayList
+                for(DataSnapshot snapshot : runsSnapshot.getChildren()){
+                    Run run = snapshot.getValue(Run.class);
+
+                    //Adds the run to the runs ArrayList if the date is within the specified date range
+                    if(Arrays.asList(dates).contains(run.getRunDate())){
+                        runs.add(run);
+                    }
+                }
+
+                //Sends the targets and runs back to the appropriate Activity
+                returnTargetsAndRuns(target, runs);
             }
 
             @Override
@@ -288,10 +294,11 @@ public class FirebaseService
     /**
      * Returns the targets to the user
      */
-    private void returnTargets(Target target){
+    private void returnTargetsAndRuns(Target target, ArrayList<Run> runs){
         Bundle bundle = new Bundle();
-        bundle.putParcelable(ACTION_GET_TARGETS, target);
-        mResultReceiver.send(ACTION_GET_TARGETS_RESULT_CODE, bundle);
+        bundle.putParcelable(TARGET_EXTRA, target);
+        bundle.putParcelableArrayList(RUNS_EXTRA, runs);
+        mResultReceiver.send(ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE, bundle);
     }
 
     /**

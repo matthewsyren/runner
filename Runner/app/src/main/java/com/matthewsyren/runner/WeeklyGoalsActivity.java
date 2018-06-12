@@ -59,8 +59,7 @@ public class WeeklyGoalsActivity
         }
         else{
             //Requests the targets and runs for the week from Firebase
-            new Target().requestTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
-            new Run().requestRunsForWeek(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -116,7 +115,7 @@ public class WeeklyGoalsActivity
         }
         else{
             //Requests the user's targets from Firebase
-            new Target().requestTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
 
         if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
@@ -130,7 +129,7 @@ public class WeeklyGoalsActivity
         }
         else{
             //Requests the user's runs for the week from Firebase
-            new Run().requestRunsForWeek(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -238,7 +237,7 @@ public class WeeklyGoalsActivity
 
         //Sets the progress and colour of the ProgressBar
         progressBar.setProgress(progress);
-        if(progress == 100){
+        if(progress >= 100){
             progressBar.getProgressDrawable()
                     .setColorFilter(getColor(R.color.colorGreen), PorterDuff.Mode.SRC_IN);
         }
@@ -262,35 +261,25 @@ public class WeeklyGoalsActivity
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
 
-            if(resultCode == FirebaseService.ACTION_GET_TARGETS_RESULT_CODE){
-                mTarget = resultData.getParcelable(FirebaseService.ACTION_GET_TARGETS);
+            if(resultCode == FirebaseService.ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE){
+                mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
+                mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
 
-                if(mTarget != null){
+                if(mTarget != null && mRuns != null){
+                    //Displays the user's progress towards their targets
+                    displayProgress(mRuns);
                     displayTargets(mTarget);
-
-                    if(mRuns != null){
-                        //Displays the user's progress towards their targets
-                        displayProgress(mRuns);
-                    }
                 }
                 else{
                     Toast.makeText(getApplicationContext(), getString(R.string.error_no_weekly_targets_fetched), Toast.LENGTH_LONG).show();
                     mPbWeeklyGoals.setVisibility(View.GONE);
                 }
             }
-            else if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
-                mRuns = resultData.getParcelableArrayList(FirebaseService.ACTION_GET_RUNS);
-
-                if(mTarget != null && mRuns != null){
-                    //Displays the user's progress towards their targets
-                    displayProgress(mRuns);
-                }
-            }
             else if(resultCode == FirebaseService.ACTION_UPDATE_TARGETS_RESULT_CODE){
                 Toast.makeText(getApplicationContext(), R.string.targets_successfully_updated, Toast.LENGTH_LONG).show();
 
                 //Updates the targets
-                new Target().requestTargets(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), this);
+                new Target().requestTargetsAndRuns(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), this);
             }
         }
     }

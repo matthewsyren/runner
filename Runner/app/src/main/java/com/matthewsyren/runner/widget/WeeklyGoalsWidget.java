@@ -1,15 +1,18 @@
 package com.matthewsyren.runner.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.widget.RemoteViews;
 
 import com.matthewsyren.runner.R;
+import com.matthewsyren.runner.WeeklyGoalsActivity;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
@@ -62,6 +65,11 @@ public class WeeklyGoalsWidget
         int averageSpeedProgress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, mTarget.getAverageSpeedTarget());
         views.setProgressBar(R.id.pb_widget_average_speed_target, 100, averageSpeedProgress, false);
         views.setTextViewText(R.id.tv_widget_average_speed_target, context.getString(R.string.average_speed_target_progress, averageSpeed, mTarget.getAverageSpeedTarget()));
+
+        //Creates a PendingIntent that will open WeeklyGoalsActivity when the user clicks on the Widget heading
+        Intent intent = new Intent(context, WeeklyGoalsActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        views.setOnClickPendingIntent(R.id.tv_widget_heading, pendingIntent);
 
         //Displays the updated values in the Widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

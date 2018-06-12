@@ -1,8 +1,94 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#09C"
-    android:padding="@dimen/widget_margin">
+    android:background="@color/colorWhite"
+    android:padding="@dimen/widget_margin"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_widget_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableStart="@mipmap/ic_launcher"
+        android:text="@string/title_activity_weekly_goals"
+        android:textSize="@dimen/recipe_widget_heading_text_size"
+        android:textColor="@color/colorBlack"
+        android:layout_margin="@dimen/widget_margin"
+        android:gravity="center_vertical"
+        android:padding="@dimen/widget_margin"
+        android:background="@color/colorPrimary"/>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/tv_widget_distance_target_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:text="@string/distance_travelled"
+        android:layout_marginTop="@dimen/widget_weekly_goal_margin"/>
+
+    <TextView
+        android:id="@+id/tv_widget_distance_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/RunInformationStyle" />
+
+    <ProgressBar
+        android:id="@+id/pb_widget_distance_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+
+    <TextView
+        android:id="@+id/tv_widget_duration_target_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:text="@string/time_spent_running"
+        android:layout_marginTop="@dimen/widget_weekly_goal_margin"/>
+
+    <TextView
+        android:id="@+id/tv_widget_duration_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/RunInformationStyle" />
+
+    <ProgressBar
+        android:id="@+id/pb_widget_duration_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+
+    <TextView
+        android:id="@+id/tv_widget_average_speed_target_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:text="@string/average_speed"
+        android:layout_marginTop="@dimen/widget_weekly_goal_margin"/>
+
+    <TextView
+        android:id="@+id/tv_widget_average_speed_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/RunInformationStyle" />
+
+    <ProgressBar
+        android:id="@+id/pb_widget_average_speed_target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin" />
+</LinearLayout>

@@ -31,4 +31,6 @@
     <dimen name="widget_margin">8dp</dimen>
     <dimen name="widget_min_height">180dp</dimen>
     <dimen name="widget_min_width">250dp</dimen>
+    <dimen name="recipe_widget_heading_text_size">30sp</dimen>
+    <dimen name="widget_weekly_goal_margin">24dp</dimen>
 </resources>

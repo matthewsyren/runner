@@ -20,6 +20,7 @@ import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 
 import java.util.ArrayList;
 
@@ -188,7 +189,7 @@ public class WeeklyGoalsActivity
         }
 
         //Calculates the user's average speed
-        int averageSpeed = (int) Math.round(RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration));
+        int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
 
         //Converts the totalDistance to kilometres
         totalDistance /= 1000;
@@ -206,7 +207,7 @@ public class WeeklyGoalsActivity
     private void displayProgressInProgressBars(double totalDistance, int totalDuration, int averageSpeed){
         //Displays the user's progress in the ProgressBars with the appropriate colours (green if the target has been met, otherwise the accent colour)
         if(mTarget.getDistanceTarget() > 0){
-            int progress = (int)(totalDistance / mTarget.getDistanceTarget() * 100);
+            int progress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, mTarget.getDistanceTarget());
             setProgressBarColour(progress, mPbDistanceTarget);
         }
         else{
@@ -214,7 +215,7 @@ public class WeeklyGoalsActivity
         }
 
         if(mTarget.getDurationTarget() > 0){
-            int progress = (int)((double)totalDuration / mTarget.getDurationTarget() * 100);
+            int progress = WeeklyGoalsUtilities.getDurationProgress(totalDuration, mTarget.getDurationTarget());
             setProgressBarColour(progress, mPbDurationTarget);
         }
         else{
@@ -222,7 +223,7 @@ public class WeeklyGoalsActivity
         }
 
         if(mTarget.getAverageSpeedTarget() > 0){
-            int progress = (int)((double)averageSpeed / mTarget.getAverageSpeedTarget() * 100);
+            int progress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, mTarget.getAverageSpeedTarget());
             setProgressBarColour(progress, mPbAverageSpeedTarget);
         }
         else{

@@ -50,6 +50,7 @@ import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
@@ -318,6 +319,9 @@ public class MainActivity
     private void signOut(){
         //Clears the user's key from SharedPreferences
         PreferenceUtilities.setUserKey(this, null);
+
+        //Updates the Widgets
+        WidgetUtilities.updateWidgets(this);
     }
 
     //Initialises the map and the appropriate variables
@@ -738,9 +742,15 @@ public class MainActivity
                     //Saves the key to SharedPreferences and initialises the map
                     PreferenceUtilities.setUserKey(getApplicationContext(), key);
                     initialiseMap();
+
+                    //Updates the Widgets
+                    WidgetUtilities.updateWidgets(getApplicationContext());
                 }
             }
             else if(resultCode == FirebaseService.ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE){
+                //Updates the Widgets
+                WidgetUtilities.updateWidgets(getApplicationContext());
+
                 //Tells the user that their upload was successful and resets the Activity
                 Toast.makeText(getApplicationContext(), getString(R.string.run_saved), Toast.LENGTH_LONG).show();
                 mPbRunUploadProgressBar.setVisibility(View.GONE);

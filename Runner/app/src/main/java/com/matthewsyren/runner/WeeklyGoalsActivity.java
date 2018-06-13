@@ -21,6 +21,7 @@ import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
+import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.util.ArrayList;
 
@@ -282,6 +283,9 @@ public class WeeklyGoalsActivity
 
                 //Updates the targets
                 new Target().requestTargetsAndRuns(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), this);
+
+                //Updates the Widgets
+                WidgetUtilities.updateWidgets(getApplicationContext());
             }
         }
     }

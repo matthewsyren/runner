@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -108,6 +109,9 @@ public class BaseActivity
                 //Signs the user out
                 AuthUI.getInstance()
                         .signOut(this);
+
+                //Updates the Widgets
+                WidgetUtilities.updateWidgets(getApplicationContext());
 
                 //Displays a message to the user and closes the Navigation Drawer
                 Toast.makeText(getApplicationContext(), getString(R.string.signed_out), Toast.LENGTH_LONG).show();

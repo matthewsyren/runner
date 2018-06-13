@@ -56,8 +56,9 @@ public class WeeklyGoalsWidget
             //Calculates the user's average speed
             int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
 
-            //Converts distance to kilometres
+            //Converts the totalDistance to kilometres and the duration to minutes
             totalDistance /= 1000;
+            totalDuration /= 60;
 
             //Displays the user's distance progress
             int distanceProgress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, mTarget.getDistanceTarget());

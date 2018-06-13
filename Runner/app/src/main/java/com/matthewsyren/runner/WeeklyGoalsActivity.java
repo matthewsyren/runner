@@ -191,8 +191,9 @@ public class WeeklyGoalsActivity
         //Calculates the user's average speed
         int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
 
-        //Converts the totalDistance to kilometres
+        //Converts the totalDistance to kilometres and the duration to minutes
         totalDistance /= 1000;
+        totalDuration /= 60;
 
         //Displays the user's progress towards their targets
         mTvDistanceTarget.setText(getString(R.string.distance_target_progress, totalDistance, mTarget.getDistanceTarget()));

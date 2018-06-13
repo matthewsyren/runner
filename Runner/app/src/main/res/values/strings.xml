@@ -81,4 +81,7 @@
     <string name="distance_target_progress">%#.3f/%d</string>
     <string name="duration_target_progress">%d/%d</string>
     <string name="average_speed_target_progress">%d/%d</string>
+
+    <!-- WeeklyGoalsWidget -->
+    <string name="widget_signed_out">You are signed out, please sign in to view your targets</string>
 </resources>

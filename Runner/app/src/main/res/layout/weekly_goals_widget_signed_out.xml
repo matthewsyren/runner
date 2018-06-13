@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+    <include
+        layout="@layout/weekly_goals_widget_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_signed_out"
+        android:layout_centerInParent="true"
+        android:textAlignment="center"
+        android:layout_margin="@dimen/widget_margin"
+        android:textSize="@dimen/widget_signed_out_text_size"
+        android:textColor="@color/colorBlack"/>
+</RelativeLayout>

@@ -18,12 +18,14 @@ import android.widget.Toast;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
+import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 
@@ -267,6 +269,15 @@ public class WeeklyGoalsActivity
             if(resultCode == FirebaseService.ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE){
                 mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
                 mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
+
+                //Gets dates for the previous week
+                String[] datesInPreviousWeek = DateUtilities.getDatesForPreviousWeek();
+
+                //Sets consecutiveTargetsMet to 0 if the user didn't meet their target in the previous week
+                if(!Arrays.asList(datesInPreviousWeek).contains(mTarget.getDateOfLastMetTarget()) && mTarget.getConsecutiveTargetsMet() > 0){
+                    mTarget.setConsecutiveTargetsMet(0);
+                    mTarget.updateTargets(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), null);
+                }
 
                 if(mTarget != null && mRuns != null){
                     //Displays the user's progress towards their targets

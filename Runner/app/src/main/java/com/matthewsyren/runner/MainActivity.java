@@ -87,6 +87,7 @@ public class MainActivity
     private int mRunDuration = -1;
     private Timer mTimer;
     private Location mPreviousLocation;
+    private AlertDialog mStartRunningDialog = null;
 
     //Time constants
     private static final int DOUBLE_BACK_PRESS_TIME_WINDOW = 6000;
@@ -376,22 +377,8 @@ public class MainActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if(mLocationManager != null){
-            //Gets current location
-            LatLng currentLocation = getCurrentLocation();
-            mPreviousLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            if(currentLocation != null){
-                //Centers the current location and draws a polyline to the location
-                zoomToLocation(currentLocation);
-                drawPolyline(currentLocation);
-
-                //Includes the location in the LatLngBuilder
-                mLatLngBoundsBuilder.include(currentLocation);
-                mLatLngBuilderCount++;
-
-                //Displays a marker at the start of the route
-                addMarkerToLocation(currentLocation, getString(R.string.start));
-            }
+            //Displays a Dialog to the user telling them to start running
+            displayStartRunningDialog();
 
             //Adapted from https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
             mLocationListener = new LocationListener() {
@@ -399,6 +386,18 @@ public class MainActivity
                 public void onLocationChanged(Location location) {
                     //Updates location and draws a polyline from the previous location to the current location
                     LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                    //Displays a marker at the start of the route
+                    if(mLatLngBuilderCount == 0){
+                        addMarkerToLocation(newLocation, getString(R.string.start));
+                    }
+
+                    //Hides the Dialog and zooms to the user's location
+                    if(mStartRunningDialog != null){
+                        mStartRunningDialog.hide();
+                        mStartRunningDialog = null;
+                    }
+
                     drawPolyline(newLocation);
                     zoomToLocation(newLocation);
 
@@ -441,7 +440,7 @@ public class MainActivity
 
         if(currentLocation != null){
             //Gets the current location and adds a marker to it
-            addMarkerToLocation(getCurrentLocation(), getString(R.string.end));
+            addMarkerToLocation(currentLocation, getString(R.string.end));
         }
 
         //Stops the timer
@@ -566,7 +565,21 @@ public class MainActivity
         }
     }
 
-    /* Displays a Dialog which allows the user to save their run
+    /*
+     * Displays a Dialog telling the user to start their run
+     */
+    private void displayStartRunningDialog(){
+        //Creates an AlertDialog to ask the user if they'd like to save their run
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_start_running, null);
+        alertDialogBuilder.setView(view);
+        mStartRunningDialog = alertDialogBuilder.create();
+        mStartRunningDialog.show();
+    }
+
+    /*
+     * Displays a Dialog which allows the user to save their run
      * Adapted from https://developer.android.com/guide/topics/ui/dialogs.html
      */
     private void displaySummaryDialog(){

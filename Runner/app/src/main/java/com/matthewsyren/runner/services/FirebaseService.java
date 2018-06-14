@@ -1,7 +1,9 @@
 package com.matthewsyren.runner.services;
 
 import android.app.IntentService;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
@@ -14,6 +16,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
+import com.matthewsyren.runner.receivers.Receiver;
+import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -220,7 +224,10 @@ public class FirebaseService
                 //Creates default targets for the user if they haven't set any yet
                 if(target == null){
                     target = new Target();
-                    mDatabaseReference.setValue(target);
+
+                    mDatabaseReference
+                            .child("targets")
+                            .setValue(target);
                 }
 
                 ArrayList<Run> runs = new ArrayList<>();
@@ -236,6 +243,12 @@ public class FirebaseService
                     }
                 }
 
+                //Schedules a Service to check if the user meets their targets at the end of the week
+                WeeklyGoalsUtilities.scheduleWeeklyGoalsService(getApplicationContext());
+
+                //Enables the Receiver BroadcastReceiver to pick up when the device is booted
+                enableReceiver();
+
                 //Sends the targets and runs back to the appropriate Activity
                 returnTargetsAndRuns(target, runs);
             }
@@ -245,6 +258,19 @@ public class FirebaseService
 
             }
         });
+    }
+
+    /**
+     * Enables the Receiver BroadcastReceiver to pick up when the device is booted
+     */
+    private void enableReceiver(){
+        /*
+         * Enables the Receiver class to receive broadcasts when the device is turned on
+         * Adapted from http://blog.teamtreehouse.com/scheduling-time-sensitive-tasks-in-android-with-alarmmanager
+         */
+        ComponentName componentName = new ComponentName(getApplication(), Receiver.class);
+        PackageManager packageManager = getPackageManager();
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
     /**
@@ -270,41 +296,51 @@ public class FirebaseService
      * Returns the user's key to the appropriate Activity
      */
     private void returnUserKey(String key){
-        Bundle bundle = new Bundle();
-        bundle.putString(USER_KEY_EXTRA, key);
-        mResultReceiver.send(ACTION_GET_USER_KEY_RESULT_CODE, bundle);
+        if(mResultReceiver != null){
+            Bundle bundle = new Bundle();
+            bundle.putString(USER_KEY_EXTRA, key);
+            mResultReceiver.send(ACTION_GET_USER_KEY_RESULT_CODE, bundle);
+        }
     }
 
     /**
      * Informs the appropriate Activity that the upload was successful
      */
     private void returnRunUploadResult(){
-        mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, null);
+        if(mResultReceiver != null){
+            mResultReceiver.send(ACTION_UPLOAD_RUN_INFORMATION_RESULT_CODE, null);
+        }
     }
 
     /**
      * Returns the ArrayList of runs to the user
      */
     private void returnRuns(ArrayList<Run> runs){
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(RUNS_EXTRA, runs);
-        mResultReceiver.send(ACTION_GET_RUNS_RESULT_CODE, bundle);
+        if(mResultReceiver != null){
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList(RUNS_EXTRA, runs);
+            mResultReceiver.send(ACTION_GET_RUNS_RESULT_CODE, bundle);
+        }
     }
 
     /**
      * Returns the targets to the user
      */
     private void returnTargetsAndRuns(Target target, ArrayList<Run> runs){
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(TARGET_EXTRA, target);
-        bundle.putParcelableArrayList(RUNS_EXTRA, runs);
-        mResultReceiver.send(ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE, bundle);
+        if(mResultReceiver != null){
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(TARGET_EXTRA, target);
+            bundle.putParcelableArrayList(RUNS_EXTRA, runs);
+            mResultReceiver.send(ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE, bundle);
+        }
     }
 
     /**
      * Informs the appropriate Activity that the updating of the user's targets was successful
      */
     private void returnTargetUpdateResult(){
-        mResultReceiver.send(ACTION_UPDATE_TARGETS_RESULT_CODE, null);
+        if(mResultReceiver != null){
+            mResultReceiver.send(ACTION_UPDATE_TARGETS_RESULT_CODE, null);
+        }
     }
 }

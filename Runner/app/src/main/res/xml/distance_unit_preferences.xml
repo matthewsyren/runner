@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="@string/unit_kilometres_key"
+        android:entries="@array/preferred_unit_labels"
+        android:entryValues="@array/preferred_unit_keys"
+        android:key="@string/preferred_distance_unit_key"
+        android:title="@string/preferred_distance_unit" />
+</PreferenceScreen>

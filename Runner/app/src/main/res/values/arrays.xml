@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preferred_unit_labels">
+        <item>@string/unit_kilometres</item>
+        <item>@string/unit_miles</item>
+    </array>
+
+    <array name="preferred_unit_keys">
+        <item>@string/unit_kilometres_key</item>
+        <item>@string/unit_miles_key</item>
+    </array>
+</resources>

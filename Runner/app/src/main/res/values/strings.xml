@@ -88,4 +88,10 @@
 
     <!-- SettingsActivity -->
     <string name="title_activity_settings">Settings</string>
+    <string name="preferred_distance_unit">Preferred distance unit</string>
+    <string name="preferred_distance_unit_key" translatable="false">preferred_unit_key</string>
+    <string name="unit_kilometres_key" translatable="false">unit_kilometres</string>
+    <string name="unit_miles_key" translatable="false">unit_miles</string>
+    <string name="unit_kilometres">Kilometres</string>
+    <string name="unit_miles">Miles</string>
 </resources>

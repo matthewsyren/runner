@@ -18,7 +18,7 @@ import com.matthewsyren.runner.WeeklyGoalsActivity;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 
@@ -102,7 +102,7 @@ public class WeeklyGoalsWidget
         mContext = context;
 
         //Fetches the user's unique key
-        String userKey = PreferenceUtilities.getUserKey(context);
+        String userKey = UserAccountUtilities.getUserKey(context);
 
         //Determines whether the user is signed in or not based on if their key has a value
         if(userKey != null){

@@ -20,7 +20,7 @@ import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
@@ -63,13 +63,13 @@ public class WeeklyGoalsActivity
             restoreData(savedInstanceState);
         }
         else{
-            if(PreferenceUtilities.getUserKey(this) != null) {
+            if(UserAccountUtilities.getUserKey(this) != null) {
                 //Requests the targets and runs for the week from Firebase
-                new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+                new Target().requestTargetsAndRuns(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
             }
             else {
                 //Requests the user's key if it hasn't already been set
-                PreferenceUtilities.requestUserKey(this, new DataReceiver(new Handler()));
+                UserAccountUtilities.requestUserKey(this, new DataReceiver(new Handler()));
             }
         }
     }
@@ -126,7 +126,7 @@ public class WeeklyGoalsActivity
         }
         else{
             //Requests the user's targets from Firebase
-            new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Target().requestTargetsAndRuns(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
 
         if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
@@ -140,7 +140,7 @@ public class WeeklyGoalsActivity
         }
         else{
             //Requests the user's runs for the week from Firebase
-            new Target().requestTargetsAndRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            new Target().requestTargetsAndRuns(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -183,7 +183,7 @@ public class WeeklyGoalsActivity
             mTarget.setAverageSpeedTarget(Integer.parseInt(mEtAverageSpeedTarget.getText().toString()));
 
             //Sends the updated targets to Firebase
-            mTarget.updateTargets(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            mTarget.updateTargets(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
         }
     }
 
@@ -283,7 +283,7 @@ public class WeeklyGoalsActivity
                 //Sets consecutiveTargetsMet to 0 if the user didn't meet their target in the previous week
                 if(!Arrays.asList(datesInPreviousWeek).contains(mTarget.getDateOfLastMetTarget()) && mTarget.getConsecutiveTargetsMet() > 0){
                     mTarget.setConsecutiveTargetsMet(0);
-                    mTarget.updateTargets(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), null);
+                    mTarget.updateTargets(getApplicationContext(), UserAccountUtilities.getUserKey(getApplicationContext()), null);
                 }
 
                 if(mTarget != null && mRuns != null){
@@ -300,7 +300,7 @@ public class WeeklyGoalsActivity
                 Toast.makeText(getApplicationContext(), R.string.targets_successfully_updated, Toast.LENGTH_LONG).show();
 
                 //Updates the targets
-                new Target().requestTargetsAndRuns(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), this);
+                new Target().requestTargetsAndRuns(getApplicationContext(), UserAccountUtilities.getUserKey(getApplicationContext()), this);
 
                 //Updates the Widgets
                 WidgetUtilities.updateWidgets(getApplicationContext());
@@ -311,7 +311,7 @@ public class WeeklyGoalsActivity
 
                 if(key != null){
                     //Saves the key to SharedPreferences
-                    PreferenceUtilities.setUserKey(getApplicationContext(), key);
+                    UserAccountUtilities.setUserKey(getApplicationContext(), key);
 
                     //Updates the Widgets
                     WidgetUtilities.updateWidgets(getApplicationContext());

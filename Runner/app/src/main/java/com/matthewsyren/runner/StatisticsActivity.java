@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
@@ -55,13 +55,13 @@ public class StatisticsActivity
             calculateStatistics(mRuns);
         }
         else{
-            if(PreferenceUtilities.getUserKey(this) != null){
+            if(UserAccountUtilities.getUserKey(this) != null){
                 //Fetches the runs for the user from Firebase
-                new Run().requestRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+                new Run().requestRuns(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
             }
             else{
                 //Requests the user's key if it hasn't already been set
-                PreferenceUtilities.requestUserKey(this, new DataReceiver(new Handler()));
+                UserAccountUtilities.requestUserKey(this, new DataReceiver(new Handler()));
             }
         }
     }
@@ -152,7 +152,7 @@ public class StatisticsActivity
 
                 if(key != null){
                     //Saves the key to SharedPreferences
-                    PreferenceUtilities.setUserKey(getApplicationContext(), key);
+                    UserAccountUtilities.setUserKey(getApplicationContext(), key);
 
                     //Updates the Widgets
                     WidgetUtilities.updateWidgets(getApplicationContext());

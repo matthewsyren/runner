@@ -45,7 +45,7 @@ public class WeeklyGoalsUtilities {
     public static void scheduleWeeklyGoalsService(Context context){
         //Sets up a PendingIntent to start the Service
         AlarmManager alarmManager = (AlarmManager)context.getSystemService(ALARM_SERVICE);
-        String userKey = PreferenceUtilities.getUserKey(context);
+        String userKey = UserAccountUtilities.getUserKey(context);
         Intent serviceIntent = new Intent(context, WeeklyGoalsService.class);
         serviceIntent.putExtra(WeeklyGoalsService.USER_KEY_EXTRA, userKey);
         PendingIntent pendingIntent = PendingIntent.getService(context, 0, serviceIntent, 0);

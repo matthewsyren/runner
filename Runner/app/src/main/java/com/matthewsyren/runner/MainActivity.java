@@ -48,7 +48,7 @@ import com.google.firebase.storage.UploadTask;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
@@ -107,7 +107,7 @@ public class MainActivity
         setUpAuthListener();
 
         //Displays the FloatingActionButton if the user's unique key has been saved
-        if(PreferenceUtilities.getUserKey(this) != null){
+        if(UserAccountUtilities.getUserKey(this) != null){
             mFabToggleRun.setVisibility(View.VISIBLE);
         }
     }
@@ -297,9 +297,9 @@ public class MainActivity
                     );
                 }
                 else{
-                    if(PreferenceUtilities.getUserKey(getApplicationContext()) == null){
+                    if(UserAccountUtilities.getUserKey(getApplicationContext()) == null){
                         //Requests the user's unique key from Firebase
-                        PreferenceUtilities.requestUserKey(getApplicationContext(), new DataReceiver(new Handler()));
+                        UserAccountUtilities.requestUserKey(getApplicationContext(), new DataReceiver(new Handler()));
                     }
                     else{
                         initialiseMap();
@@ -315,7 +315,7 @@ public class MainActivity
     //Performs tasks when the user signs out
     private void signOut(){
         //Clears the user's key from SharedPreferences
-        PreferenceUtilities.setUserKey(this, null);
+        UserAccountUtilities.setUserKey(this, null);
 
         //Updates the Widgets
         WidgetUtilities.updateWidgets(this);
@@ -699,7 +699,7 @@ public class MainActivity
                                                 Run run = new Run(formattedDate, mRunDuration, Math.round(mDistanceTravelled), uri.toString());
 
                                                 //Sends a request to FirebaseService to upload the run's data
-                                                run.requestUpload(getApplicationContext(), PreferenceUtilities.getUserKey(getApplicationContext()), imageKey, new DataReceiver(new Handler()));
+                                                run.requestUpload(getApplicationContext(), UserAccountUtilities.getUserKey(getApplicationContext()), imageKey, new DataReceiver(new Handler()));
                                             }
                                         });
                             }
@@ -752,7 +752,7 @@ public class MainActivity
 
                 if(key != null){
                     //Saves the key to SharedPreferences and initialises the map
-                    PreferenceUtilities.setUserKey(getApplicationContext(), key);
+                    UserAccountUtilities.setUserKey(getApplicationContext(), key);
                     initialiseMap();
 
                     //Displays the FloatingActionButton once the user's unique key has been saved

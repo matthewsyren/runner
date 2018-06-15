@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.matthewsyren.runner.services.FirebaseService;
 
-public class PreferenceUtilities {
+public class UserAccountUtilities {
     private static final String USER_KEY = "user_key";
 
     /**

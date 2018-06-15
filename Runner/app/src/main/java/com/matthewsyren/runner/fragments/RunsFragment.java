@@ -19,7 +19,7 @@ import com.matthewsyren.runner.adapters.IRecyclerViewOnItemClickListener;
 import com.matthewsyren.runner.adapters.RunsAdapter;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.util.ArrayList;
@@ -64,13 +64,13 @@ public class RunsFragment
             restoreData(savedInstanceState);
         }
         else{
-            if(PreferenceUtilities.getUserKey(getContext()) != null){
+            if(UserAccountUtilities.getUserKey(getContext()) != null){
                 //Requests the data from Firebase
-                new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+                new Run().requestRuns(getContext(), UserAccountUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
             }
             else{
                 //Requests the user's key if it hasn't already been set
-                PreferenceUtilities.requestUserKey(getContext(), new DataReceiver(new Handler()));
+                UserAccountUtilities.requestUserKey(getContext(), new DataReceiver(new Handler()));
             }
         }
 
@@ -105,7 +105,7 @@ public class RunsFragment
         }
         else{
             //Requests the data from Firebase
-            new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+            new Run().requestRuns(getContext(), UserAccountUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
         }
 
         if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
@@ -209,7 +209,7 @@ public class RunsFragment
 
                 if(key != null){
                     //Saves the key to SharedPreferences
-                    PreferenceUtilities.setUserKey(getContext(), key);
+                    UserAccountUtilities.setUserKey(getContext(), key);
 
                     //Updates the Widgets
                     WidgetUtilities.updateWidgets(getContext());

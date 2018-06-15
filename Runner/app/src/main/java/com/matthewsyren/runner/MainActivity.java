@@ -35,6 +35,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -526,6 +527,14 @@ public class MainActivity
                 .position(location)
                 .title(markerTitle))
                 .showInfoWindow();
+
+        //Prevents clicks on the Markers
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return true;
+            }
+        });
     }
 
     //Returns the current location in a LatLng object

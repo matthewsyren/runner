@@ -105,6 +105,11 @@ public class MainActivity
 
         //Checks if the user is signed in, and signs them in if they aren't
         setUpAuthListener();
+
+        //Displays the FloatingActionButton if the user's unique key has been saved
+        if(PreferenceUtilities.getUserKey(this) != null){
+            mFabToggleRun.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -294,7 +299,7 @@ public class MainActivity
                 else{
                     if(PreferenceUtilities.getUserKey(getApplicationContext()) == null){
                         //Requests the user's unique key from Firebase
-                        requestUserKey(firebaseUser.getEmail());
+                        PreferenceUtilities.requestUserKey(getApplicationContext(), new DataReceiver(new Handler()));
                     }
                     else{
                         initialiseMap();
@@ -307,15 +312,6 @@ public class MainActivity
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
-    //Requests the user's unique key from the Firebase Database
-    private void requestUserKey(String emailAddress){
-        Intent intent = new Intent(getApplicationContext(), FirebaseService.class);
-        intent.setAction(FirebaseService.ACTION_GET_USER_KEY);
-        intent.putExtra(Intent.EXTRA_EMAIL, emailAddress);
-        intent.putExtra(FirebaseService.RESULT_RECEIVER, new DataReceiver(new Handler()));
-        startService(intent);
-    }
-
     //Performs tasks when the user signs out
     private void signOut(){
         //Clears the user's key from SharedPreferences
@@ -323,6 +319,9 @@ public class MainActivity
 
         //Updates the Widgets
         WidgetUtilities.updateWidgets(this);
+
+        //Hides the FloatingActionButton
+        mFabToggleRun.setVisibility(View.GONE);
     }
 
     //Initialises the map and the appropriate variables
@@ -755,6 +754,9 @@ public class MainActivity
                     //Saves the key to SharedPreferences and initialises the map
                     PreferenceUtilities.setUserKey(getApplicationContext(), key);
                     initialiseMap();
+
+                    //Displays the FloatingActionButton once the user's unique key has been saved
+                    mFabToggleRun.setVisibility(View.VISIBLE);
 
                     //Updates the Widgets
                     WidgetUtilities.updateWidgets(getApplicationContext());

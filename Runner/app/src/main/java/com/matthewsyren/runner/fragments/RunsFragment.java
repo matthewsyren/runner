@@ -1,5 +1,6 @@
 package com.matthewsyren.runner.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -19,6 +20,7 @@ import com.matthewsyren.runner.adapters.RunsAdapter;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
+import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.util.ArrayList;
 
@@ -62,8 +64,14 @@ public class RunsFragment
             restoreData(savedInstanceState);
         }
         else{
-            //Requests the data from Firebase
-            new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+            if(PreferenceUtilities.getUserKey(getContext()) != null){
+                //Requests the data from Firebase
+                new Run().requestRuns(getContext(), PreferenceUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
+            }
+            else{
+                //Requests the user's key if it hasn't already been set
+                PreferenceUtilities.requestUserKey(getContext(), new DataReceiver(new Handler()));
+            }
         }
 
         return view;
@@ -194,6 +202,23 @@ public class RunsFragment
 
                 //Displays the runs
                 displayRuns(mRuns);
+            }
+            else if(resultCode == FirebaseService.ACTION_GET_USER_KEY_RESULT_CODE){
+                //Gets the user's key
+                String key = resultData.getString(FirebaseService.USER_KEY_EXTRA);
+
+                if(key != null){
+                    //Saves the key to SharedPreferences
+                    PreferenceUtilities.setUserKey(getContext(), key);
+
+                    //Updates the Widgets
+                    WidgetUtilities.updateWidgets(getContext());
+
+                    //Restarts the Activity
+                    Intent intent = getActivity().getIntent();
+                    getActivity().finish();
+                    startActivity(intent);
+                }
             }
         }
     }

@@ -30,6 +30,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_baseline_directions_run_24px"
-        android:onClick="toggleRunOnClick"/>
+        android:onClick="toggleRunOnClick"
+        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>

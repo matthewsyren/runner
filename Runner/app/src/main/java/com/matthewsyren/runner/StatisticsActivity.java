@@ -1,5 +1,6 @@
 package com.matthewsyren.runner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -12,6 +13,7 @@ import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.PreferenceUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.util.ArrayList;
 
@@ -53,8 +55,14 @@ public class StatisticsActivity
             calculateStatistics(mRuns);
         }
         else{
-            //Fetches the runs for the user from Firebase
-            new Run().requestRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            if(PreferenceUtilities.getUserKey(this) != null){
+                //Fetches the runs for the user from Firebase
+                new Run().requestRuns(this, PreferenceUtilities.getUserKey(this), new DataReceiver(new Handler()));
+            }
+            else{
+                //Requests the user's key if it hasn't already been set
+                PreferenceUtilities.requestUserKey(this, new DataReceiver(new Handler()));
+            }
         }
     }
 
@@ -137,6 +145,23 @@ public class StatisticsActivity
             if(resultCode == FirebaseService.ACTION_GET_RUNS_RESULT_CODE){
                 mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
                 calculateStatistics(mRuns);
+            }
+            else if(resultCode == FirebaseService.ACTION_GET_USER_KEY_RESULT_CODE){
+                //Gets the user's key
+                String key = resultData.getString(FirebaseService.USER_KEY_EXTRA);
+
+                if(key != null){
+                    //Saves the key to SharedPreferences
+                    PreferenceUtilities.setUserKey(getApplicationContext(), key);
+
+                    //Updates the Widgets
+                    WidgetUtilities.updateWidgets(getApplicationContext());
+
+                    //Restarts the Activity
+                    Intent intent = getIntent();
+                    finish();
+                    startActivity(intent);
+                }
             }
         }
     }

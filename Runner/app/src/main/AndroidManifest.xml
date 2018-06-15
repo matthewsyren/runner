@@ -9,7 +9,8 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -57,12 +58,15 @@
             android:name=".WeeklyGoalsActivity"
             android:label="@string/title_activity_weekly_goals"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service android:name=".services.FirebaseService" />
         <service android:name=".services.WeeklyGoalsService" />
 
-        <receiver
-            android:name=".widget.WeeklyGoalsWidget">
+        <receiver android:name=".widget.WeeklyGoalsWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -71,12 +75,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/weekly_goals_widget_info" />
         </receiver>
-
         <receiver
             android:name=".receivers.Receiver"
             android:enabled="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
     </application>

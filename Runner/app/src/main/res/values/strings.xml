@@ -13,7 +13,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="nav_settings">Settings</string>
     <string name="signed_out">Signed out</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
 
@@ -85,4 +85,7 @@
 
     <!-- WeeklyGoalsWidget -->
     <string name="widget_signed_out">You are signed out, please sign in to view your targets</string>
+
+    <!-- SettingsActivity -->
+    <string name="title_activity_settings">Settings</string>
 </resources>

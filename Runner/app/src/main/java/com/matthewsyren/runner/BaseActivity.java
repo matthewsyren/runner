@@ -105,6 +105,9 @@ public class BaseActivity
             case R.id.nav_weekly_goals:
                 intent = new Intent(getApplicationContext(), WeeklyGoalsActivity.class);
                 break;
+            case R.id.nav_settings:
+                intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                break;
             case R.id.nav_sign_out:
                 //Signs the user out
                 AuthUI.getInstance()

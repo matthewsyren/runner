@@ -83,7 +83,7 @@
     <string name="targets_successfully_updated">Targets successfully updated</string>
     <string name="distance_target_progress">%.3f/%.3f</string>
     <string name="duration_target_progress">%d/%d</string>
-    <string name="average_speed_target_progress">%d/%d</string>
+    <string name="average_speed_target_progress">%.1f/%.1f</string>
     <string name="target_three_decimal_places">%.3f</string>
     <string name="target">Target</string>
 

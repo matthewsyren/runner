@@ -20,6 +20,7 @@ import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
+import com.matthewsyren.runner.utilities.NumberUtilities;
 import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
@@ -156,8 +157,7 @@ public class WeeklyGoalsActivity
                         RunInformationFormatUtilities.getDistance(target.getDistanceTarget(), this)));
 
         mEtAverageSpeedTarget.setText(
-                String.valueOf(
-                        (int) Math.round(RunInformationFormatUtilities.getDistance(target.getAverageSpeedTarget(), this))));
+                String.valueOf(NumberUtilities.roundOffToOneDecimalPlace(RunInformationFormatUtilities.getDistance(target.getAverageSpeedTarget(), this))));
 
         mTvConsecutiveTargetsMet.setText(getString(R.string.consecutive_targets_met, target.getConsecutiveTargetsMet()));
 
@@ -216,7 +216,7 @@ public class WeeklyGoalsActivity
         //Gets the user's preferred distance unit
         String unit = UserAccountUtilities.getPreferredDistanceUnit(this);
 
-        int averageSpeed;
+        double averageSpeed;
 
         //Calculates the user's average speed in the appropriate unit
         if(unit.equals(getString(R.string.unit_kilometres_key))){
@@ -250,14 +250,14 @@ public class WeeklyGoalsActivity
         mTvAverageSpeedTarget.setText(
                 getString(R.string.average_speed_target_progress,
                         averageSpeed,
-                        (int) Math.round(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this))));
+                        RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this)));
 
         //Displays the user's progress towards their targets in the ProgressBars
         displayProgressInProgressBars(totalDistance, totalDuration, averageSpeed);
     }
 
     //Displays the user's progress towards their targets in the ProgressBars
-    private void displayProgressInProgressBars(double totalDistance, int totalDuration, int averageSpeed){
+    private void displayProgressInProgressBars(double totalDistance, int totalDuration, double averageSpeed){
         //Displays the user's progress in the ProgressBars with the appropriate colours (green if the target has been met, otherwise the accent colour)
         if(mTarget.getDistanceTarget() > 0){
             int progress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, RunInformationFormatUtilities.getDistance(mTarget.getDistanceTarget(), this));
@@ -276,7 +276,7 @@ public class WeeklyGoalsActivity
         }
 
         if(mTarget.getAverageSpeedTarget() > 0){
-            int progress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this));
+            int progress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, NumberUtilities.roundOffToOneDecimalPlace(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this)));
             setProgressBarColour(progress, mPbAverageSpeedTarget);
         }
         else{

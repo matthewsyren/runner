@@ -18,6 +18,7 @@ import com.matthewsyren.runner.WeeklyGoalsActivity;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
+import com.matthewsyren.runner.utilities.NumberUtilities;
 import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
@@ -56,7 +57,7 @@ public class WeeklyGoalsWidget
             //Gets the user's preferred unit of distance
             String unit = UserAccountUtilities.getPreferredDistanceUnit(context);
 
-            int averageSpeed;
+            double averageSpeed;
 
             //Calculates the user's average speed in the appropriate unit
             if(unit.equals(context.getString(R.string.unit_kilometres_key))){
@@ -104,7 +105,7 @@ public class WeeklyGoalsWidget
             //Displays the user's duration progress
             int averageSpeedProgress = WeeklyGoalsUtilities.getAverageSpeedProgress(
                     averageSpeed,
-                    RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context));
+                    NumberUtilities.roundOffToOneDecimalPlace(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context)));
 
             views.setProgressBar(R.id.pb_widget_average_speed_target, 100, averageSpeedProgress, false);
 
@@ -113,7 +114,7 @@ public class WeeklyGoalsWidget
                     context.getString(
                             R.string.average_speed_target_progress,
                             averageSpeed,
-                            (int) Math.round(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context))));
+                            RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context)));
 
             //Creates a PendingIntent that will open WeeklyGoalsActivity when the user clicks on the Widget heading
             Intent intent = new Intent(context, WeeklyGoalsActivity.class);

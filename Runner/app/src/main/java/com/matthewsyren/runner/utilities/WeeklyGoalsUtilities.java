@@ -18,7 +18,7 @@ public class WeeklyGoalsUtilities {
      * @param targetDistance The target distance in metres
      */
     public static int getDistanceProgress(double totalDistance, double targetDistance){
-        return (int)(totalDistance / targetDistance * 100);
+        return (int)(NumberUtilities.roundOffToThreeDecimalPlaces(totalDistance) / NumberUtilities.roundOffToThreeDecimalPlaces(targetDistance) * 100);
     }
 
     /**
@@ -36,7 +36,7 @@ public class WeeklyGoalsUtilities {
      * @param targetAverageSpeed The target average speed in kilometres per hour
      */
     public static int getAverageSpeedProgress(double averageSpeed, double targetAverageSpeed){
-        return (int)(averageSpeed / targetAverageSpeed * 100);
+        return (int)(NumberUtilities.roundOffToOneDecimalPlace(averageSpeed) / NumberUtilities.roundOffToOneDecimalPlace(targetAverageSpeed) * 100);
     }
 
     /**

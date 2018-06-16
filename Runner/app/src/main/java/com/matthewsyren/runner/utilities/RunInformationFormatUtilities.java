@@ -70,19 +70,18 @@ public class RunInformationFormatUtilities {
      * @param totalDistance The distance travelled in metres
      * @param totalDuration The duration in seconds
      */
-    public static int getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
-        return (int) Math.round((totalDistance / totalDuration * (SECONDS_IN_ONE_HOUR / METRES_IN_ONE_KILOMETRE)));
+    public static double getUsersAverageSpeedInKilometresPerHour(double totalDistance, int totalDuration){
+        return NumberUtilities.roundOffToOneDecimalPlace(totalDistance / totalDuration * ((double) SECONDS_IN_ONE_HOUR / METRES_IN_ONE_KILOMETRE));
     }
-
 
     /**
      * Returns the user's average speed in miles per hour
      * @param totalDistance The distance travelled in metres
      * @param totalDuration The duration in seconds
      */
-    public static int getUsersAverageSpeedInMilesPerHour(double totalDistance, int totalDuration){
+    public static double getUsersAverageSpeedInMilesPerHour(double totalDistance, int totalDuration){
         double yardsTravelled = totalDistance * YARDS_IN_ONE_METRE;
-        return (int) Math.round(((yardsTravelled / totalDuration) * (SECONDS_IN_ONE_HOUR / YARDS_IN_ONE_MILE)));
+        return NumberUtilities.roundOffToOneDecimalPlace(((yardsTravelled / totalDuration) * ((double) SECONDS_IN_ONE_HOUR / YARDS_IN_ONE_MILE)));
     }
 
     /**

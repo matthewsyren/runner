@@ -60,7 +60,7 @@ public class WeeklyGoalsService
                 //Updates the user's dateOfLastMetTarget and consecutiveTargetsMet information
                 if(target != null && runs != null){
                     //Sets up total variables
-                    int totalDistance = 0;
+                    double totalDistance = 0;
                     int totalDuration = 0;
 
                     //Calculates totals
@@ -69,14 +69,18 @@ public class WeeklyGoalsService
                         totalDuration += run.getRunDuration();
                     }
 
-                    int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
+                    double averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
 
-                    //Converts the totalDistance to kilometres and the duration to minutes
-                    totalDistance /= 1000;
+                    //Converts the totalDistance and distanceTarget to kilometres, duration to minutes and averageSpeedTarget to kilometres per hour
+                    totalDistance /= 1000.0;
                     totalDuration /= 60;
+                    double averageSpeedTarget = target.getAverageSpeedTarget();
+                    averageSpeedTarget /= 1000.0;
+                    double distanceTarget = target.getDistanceTarget();
+                    distanceTarget /= 1000.0;
 
                     //Updates the target's last met date and consecutive targets met based on whether the user met their target
-                    if(totalDistance >= target.getDistanceTarget() && totalDuration >= target.getDurationTarget() && averageSpeed >- target.getAverageSpeedTarget()){
+                    if(totalDistance >= distanceTarget && totalDuration >= target.getDurationTarget() && averageSpeed >= averageSpeedTarget){
                         //Increments the consecutiveTargetsMet field if the user met their target last week as well, otherwise sets consecutiveTargetsMet to 1
                         if(Arrays.asList(DateUtilities.getDatesForPreviousWeek()).contains(target.getDateOfLastMetTarget())){
                             target.setConsecutiveTargetsMet(target.getConsecutiveTargetsMet() + 1);

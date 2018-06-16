@@ -7,6 +7,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.matthewsyren.runner.R;
 import com.matthewsyren.runner.services.FirebaseService;
 
 public class UserAccountUtilities {
@@ -32,6 +33,16 @@ public class UserAccountUtilities {
     }
 
     /**
+     * Saves the user's default distance unit (km) in SharedPreferences
+     */
+    public static void setDistanceUnitPreference(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putString(context.getString(R.string.preferred_distance_unit_key), context.getString(R.string.unit_kilometres_key));
+        sharedPreferencesEditor.apply();
+    }
+
+    /**
      * Requests the user's unique key from the Firebase Database
      * @param resultReceiver The ResultReceiver that will process the result returned from the Service
      */
@@ -51,5 +62,13 @@ public class UserAccountUtilities {
         return FirebaseAuth.getInstance()
                 .getCurrentUser()
                 .getEmail();
+    }
+
+    /**
+     * Returns the user's choice of distance unit
+     */
+    public static String getPreferredDistanceUnit(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString(context.getString(R.string.preferred_distance_unit_key), "");
     }
 }

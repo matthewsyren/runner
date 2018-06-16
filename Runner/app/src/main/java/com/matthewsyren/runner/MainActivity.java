@@ -298,6 +298,11 @@ public class MainActivity
                     );
                 }
                 else{
+                    if(UserAccountUtilities.getPreferredDistanceUnit(getApplicationContext()) == null){
+                        //Sets the user's default distance preference to km if it hasn't been set already
+                        UserAccountUtilities.setDistanceUnitPreference(getApplicationContext());
+                    }
+
                     if(UserAccountUtilities.getUserKey(getApplicationContext()) == null){
                         //Requests the user's unique key from Firebase
                         UserAccountUtilities.requestUserKey(getApplicationContext(), new DataReceiver(new Handler()));

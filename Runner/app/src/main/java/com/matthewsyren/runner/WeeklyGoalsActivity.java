@@ -38,6 +38,8 @@ public class WeeklyGoalsActivity
     @BindView(R.id.et_average_speed_target) TextInputEditText mEtAverageSpeedTarget;
     @BindView(R.id.tv_duration_target) TextView mTvDurationTarget;
     @BindView(R.id.tv_distance_target) TextView mTvDistanceTarget;
+    @BindView(R.id.tv_distance_target_label) TextView mTvDistanceTargetLabel;
+    @BindView(R.id.tv_average_speed_target_label) TextView mTvAverageSpeedTargetLabel;
     @BindView(R.id.tv_average_speed_target) TextView mTvAverageSpeedTarget;
     @BindView(R.id.tv_consecutive_targets_met) TextView mTvConsecutiveTargetsMet;
     @BindView(R.id.sv_weekly_goals) ScrollView mSvWeeklyGoals;
@@ -148,8 +150,15 @@ public class WeeklyGoalsActivity
     private void displayTargets(Target target) {
         //Displays the user's targets in the appropriate Views
         mEtDurationTarget.setText(String.valueOf(target.getDurationTarget()));
-        mEtDistanceTarget.setText(String.valueOf(target.getDistanceTarget()));
-        mEtAverageSpeedTarget.setText(String.valueOf(target.getAverageSpeedTarget()));
+
+        mEtDistanceTarget.setText(
+                getString(R.string.target_three_decimal_places,
+                        RunInformationFormatUtilities.getDistance(target.getDistanceTarget(), this)));
+
+        mEtAverageSpeedTarget.setText(
+                String.valueOf(
+                        (int) Math.round(RunInformationFormatUtilities.getDistance(target.getAverageSpeedTarget(), this))));
+
         mTvConsecutiveTargetsMet.setText(getString(R.string.consecutive_targets_met, target.getConsecutiveTargetsMet()));
 
         //Hides the ProgressBar and displays the ScrollView
@@ -177,10 +186,16 @@ public class WeeklyGoalsActivity
             mPbWeeklyGoals.setVisibility(View.VISIBLE);
             mSvWeeklyGoals.setVisibility(View.GONE);
 
+            //Ensures the decimal separator is a full stop
+            String distanceTarget = mEtDistanceTarget.getText().toString();
+            distanceTarget = distanceTarget.replaceAll(",", ".");
+            String averageSpeed = mEtAverageSpeedTarget.getText().toString();
+            averageSpeed = averageSpeed.replaceAll(",", ".");
+
             //Updates the values
-            mTarget.setDistanceTarget(Integer.parseInt(mEtDistanceTarget.getText().toString()));
+            mTarget.setDistanceTarget(RunInformationFormatUtilities.getDistanceInMetres(Double.parseDouble(distanceTarget), this));
             mTarget.setDurationTarget(Integer.parseInt(mEtDurationTarget.getText().toString()));
-            mTarget.setAverageSpeedTarget(Integer.parseInt(mEtAverageSpeedTarget.getText().toString()));
+            mTarget.setAverageSpeedTarget(RunInformationFormatUtilities.getDistanceInMetres(Double.parseDouble(averageSpeed), this));
 
             //Sends the updated targets to Firebase
             mTarget.updateTargets(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
@@ -198,17 +213,44 @@ public class WeeklyGoalsActivity
             totalDuration += run.getRunDuration();
         }
 
-        //Calculates the user's average speed
-        int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
+        //Gets the user's preferred distance unit
+        String unit = UserAccountUtilities.getPreferredDistanceUnit(this);
 
-        //Converts the totalDistance to kilometres and the duration to minutes
-        totalDistance /= 1000;
+        int averageSpeed;
+
+        //Calculates the user's average speed in the appropriate unit
+        if(unit.equals(getString(R.string.unit_kilometres_key))){
+            //Calculates the user's average speed in km/h
+            averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
+            mTvDistanceTargetLabel.setText(R.string.distance_travelled_km);
+            mTvAverageSpeedTargetLabel.setText(R.string.average_speed_kmh);
+        }
+        else{
+            //Calculates the user's average speed in mph
+            averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInMilesPerHour(totalDistance, totalDuration);
+            mTvDistanceTargetLabel.setText(R.string.distance_travelled_mi);
+            mTvAverageSpeedTargetLabel.setText(R.string.average_speed_mph);
+        }
+
+        //Converts the totalDistance to the appropriate unit and the duration to minutes
+        totalDistance = RunInformationFormatUtilities.getDistance(totalDistance, this);
         totalDuration /= 60;
 
         //Displays the user's progress towards their targets
-        mTvDistanceTarget.setText(getString(R.string.distance_target_progress, totalDistance, mTarget.getDistanceTarget()));
-        mTvDurationTarget.setText(getString(R.string.duration_target_progress, totalDuration, mTarget.getDurationTarget()));
-        mTvAverageSpeedTarget.setText(getString(R.string.average_speed_target_progress, averageSpeed, mTarget.getAverageSpeedTarget()));
+        mTvDistanceTarget.setText(
+                getString(R.string.distance_target_progress,
+                        totalDistance,
+                        RunInformationFormatUtilities.getDistance(mTarget.getDistanceTarget(), this)));
+
+        mTvDurationTarget.setText(
+                getString(R.string.duration_target_progress,
+                        totalDuration,
+                        mTarget.getDurationTarget()));
+
+        mTvAverageSpeedTarget.setText(
+                getString(R.string.average_speed_target_progress,
+                        averageSpeed,
+                        (int) Math.round(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this))));
 
         //Displays the user's progress towards their targets in the ProgressBars
         displayProgressInProgressBars(totalDistance, totalDuration, averageSpeed);
@@ -218,7 +260,7 @@ public class WeeklyGoalsActivity
     private void displayProgressInProgressBars(double totalDistance, int totalDuration, int averageSpeed){
         //Displays the user's progress in the ProgressBars with the appropriate colours (green if the target has been met, otherwise the accent colour)
         if(mTarget.getDistanceTarget() > 0){
-            int progress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, mTarget.getDistanceTarget());
+            int progress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, RunInformationFormatUtilities.getDistance(mTarget.getDistanceTarget(), this));
             setProgressBarColour(progress, mPbDistanceTarget);
         }
         else{
@@ -234,7 +276,7 @@ public class WeeklyGoalsActivity
         }
 
         if(mTarget.getAverageSpeedTarget() > 0){
-            int progress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, mTarget.getAverageSpeedTarget());
+            int progress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), this));
             setProgressBarColour(progress, mPbAverageSpeedTarget);
         }
         else{

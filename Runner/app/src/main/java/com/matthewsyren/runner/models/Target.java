@@ -14,17 +14,9 @@ public class Target
         implements Parcelable {
     private int consecutiveTargetsMet;
     private String dateOfLastMetTarget;
-    private int distanceTarget;
+    private double distanceTarget;
     private int durationTarget;
     private int averageSpeedTarget;
-
-    public Target(int consecutiveTargetsMet, String dateOfLastMetTarget, int distanceTarget, int durationTarget, int averageSpeedTarget) {
-        this.consecutiveTargetsMet = consecutiveTargetsMet;
-        this.dateOfLastMetTarget = dateOfLastMetTarget;
-        this.distanceTarget = distanceTarget;
-        this.durationTarget = durationTarget;
-        this.averageSpeedTarget = averageSpeedTarget;
-    }
 
     //Creates a default Target object (used if the user hasn't set any targets yet)
     public Target(){
@@ -38,7 +30,7 @@ public class Target
     Target(Parcel in) {
         consecutiveTargetsMet = in.readInt();
         dateOfLastMetTarget = in.readString();
-        distanceTarget = in.readInt();
+        distanceTarget = in.readDouble();
         durationTarget = in.readInt();
         averageSpeedTarget = in.readInt();
     }
@@ -63,7 +55,7 @@ public class Target
         return dateOfLastMetTarget;
     }
 
-    public int getDistanceTarget() {
+    public double getDistanceTarget() {
         return distanceTarget;
     }
 
@@ -83,7 +75,7 @@ public class Target
         this.dateOfLastMetTarget = dateOfLastMetTarget;
     }
 
-    public void setDistanceTarget(int distanceTarget) {
+    public void setDistanceTarget(double distanceTarget) {
         this.distanceTarget = distanceTarget;
     }
 
@@ -104,7 +96,7 @@ public class Target
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(consecutiveTargetsMet);
         dest.writeString(dateOfLastMetTarget);
-        dest.writeInt(distanceTarget);
+        dest.writeDouble(distanceTarget);
         dest.writeInt(durationTarget);
         dest.writeInt(averageSpeedTarget);
     }

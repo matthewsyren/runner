@@ -53,27 +53,67 @@ public class WeeklyGoalsWidget
                 totalDuration += run.getRunDuration();
             }
 
-            //Calculates the user's average speed
-            int averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
+            //Gets the user's preferred unit of distance
+            String unit = UserAccountUtilities.getPreferredDistanceUnit(context);
 
-            //Converts the totalDistance to kilometres and the duration to minutes
-            totalDistance /= 1000;
+            int averageSpeed;
+
+            //Calculates the user's average speed in the appropriate unit
+            if(unit.equals(context.getString(R.string.unit_kilometres_key))){
+                //Calculates the user's average speed in km/h
+                averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInKilometresPerHour(totalDistance, totalDuration);
+                views.setTextViewText(R.id.tv_widget_distance_target_label, context.getString(R.string.distance_travelled_km));
+                views.setTextViewText(R.id.tv_widget_average_speed_target_label, context.getString(R.string.average_speed_kmh));
+            }
+            else{
+                //Calculates the user's average speed in mph
+                averageSpeed = RunInformationFormatUtilities.getUsersAverageSpeedInMilesPerHour(totalDistance, totalDuration);
+                views.setTextViewText(R.id.tv_widget_distance_target_label, context.getString(R.string.distance_travelled_mi));
+                views.setTextViewText(R.id.tv_widget_average_speed_target_label, context.getString(R.string.average_speed_mph));
+            }
+
+            //Converts the totalDistance to the appropriate unit and the duration to minutes
+            totalDistance = RunInformationFormatUtilities.getDistance(totalDistance, context);
             totalDuration /= 60;
 
             //Displays the user's distance progress
-            int distanceProgress = WeeklyGoalsUtilities.getDistanceProgress(totalDistance, mTarget.getDistanceTarget());
+            int distanceProgress = WeeklyGoalsUtilities.getDistanceProgress(
+                    totalDistance,
+                    RunInformationFormatUtilities.getDistance(mTarget.getDistanceTarget(), context));
+
             views.setProgressBar(R.id.pb_widget_distance_target, 100, distanceProgress, false);
-            views.setTextViewText(R.id.tv_widget_distance_target, context.getString(R.string.distance_target_progress, totalDistance, mTarget.getDistanceTarget()));
+
+            views.setTextViewText(
+                    R.id.tv_widget_distance_target,
+                    context.getString(
+                            R.string.distance_target_progress,
+                            totalDistance,
+                            RunInformationFormatUtilities.getDistance(mTarget.getDistanceTarget(), context)));
 
             //Displays the user's duration progress
             int durationProgress = WeeklyGoalsUtilities.getDurationProgress(totalDuration, mTarget.getDurationTarget());
             views.setProgressBar(R.id.pb_widget_duration_target, 100, durationProgress, false);
-            views.setTextViewText(R.id.tv_widget_duration_target, context.getString(R.string.duration_target_progress, totalDuration, mTarget.getDurationTarget()));
+
+            views.setTextViewText(
+                    R.id.tv_widget_duration_target,
+                    context.getString(
+                            R.string.duration_target_progress,
+                            totalDuration,
+                            mTarget.getDurationTarget()));
 
             //Displays the user's duration progress
-            int averageSpeedProgress = WeeklyGoalsUtilities.getAverageSpeedProgress(averageSpeed, mTarget.getAverageSpeedTarget());
+            int averageSpeedProgress = WeeklyGoalsUtilities.getAverageSpeedProgress(
+                    averageSpeed,
+                    RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context));
+
             views.setProgressBar(R.id.pb_widget_average_speed_target, 100, averageSpeedProgress, false);
-            views.setTextViewText(R.id.tv_widget_average_speed_target, context.getString(R.string.average_speed_target_progress, averageSpeed, mTarget.getAverageSpeedTarget()));
+
+            views.setTextViewText(
+                    R.id.tv_widget_average_speed_target,
+                    context.getString(
+                            R.string.average_speed_target_progress,
+                            averageSpeed,
+                            (int) Math.round(RunInformationFormatUtilities.getDistance(mTarget.getAverageSpeedTarget(), context))));
 
             //Creates a PendingIntent that will open WeeklyGoalsActivity when the user clicks on the Widget heading
             Intent intent = new Intent(context, WeeklyGoalsActivity.class);
@@ -159,7 +199,7 @@ public class WeeklyGoalsWidget
                 mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
                 mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
 
-                //Updates all the Widgtes
+                //Updates all the Widgets
                 updateWidgets();
             }
         }

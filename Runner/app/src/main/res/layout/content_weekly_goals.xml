@@ -31,8 +31,7 @@
                     style="@style/TextAppearance.AppCompat.Caption"
                     app:layout_constraintStart_toStartOf="@id/pb_distance_target"
                     app:layout_constraintEnd_toEndOf="@id/pb_distance_target"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/distance_travelled"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_distance_target"
@@ -53,8 +52,8 @@
                         android:id="@+id/et_distance_target"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/target_km"
                         android:textSize="@dimen/target_edit_text_text_size"
+                        android:hint="@string/target"
                         android:inputType="number" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -104,8 +103,8 @@
                         android:id="@+id/et_duration_target"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/target_mins"
                         android:textSize="@dimen/target_edit_text_text_size"
+                        android:hint="@string/target"
                         android:inputType="number" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -133,8 +132,7 @@
                     style="@style/TextAppearance.AppCompat.Caption"
                     app:layout_constraintStart_toStartOf="@id/pb_average_speed_target"
                     app:layout_constraintEnd_toEndOf="@id/pb_average_speed_target"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/average_speed"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/tv_average_speed_target"
@@ -155,7 +153,7 @@
                         android:id="@+id/et_average_speed_target"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/target_km"
+                        android:hint="@string/target"
                         android:textSize="@dimen/target_edit_text_text_size"
                         android:inputType="number" />
                 </android.support.design.widget.TextInputLayout>

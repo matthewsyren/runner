@@ -99,4 +99,7 @@
     <string name="unit_kilometres">Kilometres</string>
     <string name="unit_miles">Miles</string>
     <string name="settings_updated">Your settings have been updated</string>
+
+    <!-- Network -->
+    <string name="error_no_internet_connection">Your device is not connected to the Internet, please connect to the Internet</string>
 </resources>

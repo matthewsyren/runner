@@ -49,6 +49,7 @@ import com.google.firebase.storage.UploadTask;
 import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
+import com.matthewsyren.runner.utilities.NetworkUtilities;
 import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
@@ -613,8 +614,15 @@ public class MainActivity
             public void onClick(DialogInterface dialog, int which) {
                 switch(which){
                     case DialogInterface.BUTTON_POSITIVE:
+                        //Displays the appropriate message (based on whether there is an Internet connection)
+                        if(NetworkUtilities.isOnline(getApplicationContext())){
+                            Toast.makeText(getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_no_internet_connection), Toast.LENGTH_LONG).show();
+                        }
+
                         //Begins the process of saving the run's information
-                        Toast.makeText(getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_LONG).show();
                         mPbRunUploadProgressBar.setVisibility(View.VISIBLE);
                         mFabToggleRun.setVisibility(View.GONE);
                         saveMapScreenshot();

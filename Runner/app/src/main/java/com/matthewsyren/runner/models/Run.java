@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
+import android.widget.Toast;
 
+import com.matthewsyren.runner.R;
 import com.matthewsyren.runner.services.FirebaseService;
+import com.matthewsyren.runner.utilities.NetworkUtilities;
 
 public class Run
         implements Parcelable{
@@ -90,6 +93,11 @@ public class Run
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
         intent.putExtras(bundle);
         context.startService(intent);
+
+        //Displays message if there is no Internet connection
+        if(!NetworkUtilities.isOnline(context)){
+            Toast.makeText(context, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -105,5 +113,10 @@ public class Run
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
         intent.putExtras(bundle);
         context.startService(intent);
+
+        //Displays message if there is no Internet connection
+        if(!NetworkUtilities.isOnline(context)){
+            Toast.makeText(context, R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+        }
     }
 }

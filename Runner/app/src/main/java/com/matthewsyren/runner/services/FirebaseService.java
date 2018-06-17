@@ -20,7 +20,6 @@ import com.matthewsyren.runner.receivers.Receiver;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class FirebaseService
@@ -45,7 +44,6 @@ public class FirebaseService
     public static final String TARGET_EXTRA = "target_extra";
     public static final String USER_KEY_EXTRA = "user_key_extra";
     public static final String IMAGE_KEY_EXTRA = "image_key_extra";
-    public static final String DATES_EXTRA = "dates_extra";
     public static final String RUNS_EXTRA = "runs_extra";
 
     //Variables
@@ -84,8 +82,7 @@ public class FirebaseService
                         break;
                     case ACTION_GET_TARGETS_AND_RUNS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
-                        String[] dates = intent.getStringArrayExtra(DATES_EXTRA);
-                        getTargetsAndRuns(userKey, dates);
+                        getTargetsAndRuns(userKey);
                         break;
                     case ACTION_UPDATE_TARGETS:
                         userKey = intent.getStringExtra(USER_KEY_EXTRA);
@@ -205,9 +202,8 @@ public class FirebaseService
     /**
      * Fetches a the user's targets and their runs for the week from Firebase
      * @param userKey The user's unique key for Firebase
-     * @param dates The date range for the runs (pass in a date range with the format yyyy-MM-dd)
      */
-    private void getTargetsAndRuns(String userKey, final String[] dates){
+    private void getTargetsAndRuns(String userKey){
         openFirebaseDatabaseConnection();
 
         mDatabaseReference = mFirebaseDatabase.getReference()
@@ -233,14 +229,10 @@ public class FirebaseService
                 ArrayList<Run> runs = new ArrayList<>();
                 DataSnapshot runsSnapshot = dataSnapshot.child("runs");
 
-                //Fetches the user's runs for the week and adds them to the runs ArrayList
+                //Fetches the user's runs and adds them to the runs ArrayList
                 for(DataSnapshot snapshot : runsSnapshot.getChildren()){
                     Run run = snapshot.getValue(Run.class);
-
-                    //Adds the run to the runs ArrayList if the date is within the specified date range
-                    if(Arrays.asList(dates).contains(run.getRunDate())){
-                        runs.add(run);
-                    }
+                    runs.add(run);
                 }
 
                 //Schedules a Service to check if the user meets their targets at the end of the week

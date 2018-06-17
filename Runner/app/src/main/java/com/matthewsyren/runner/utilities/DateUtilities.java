@@ -30,7 +30,7 @@ public class DateUtilities {
      * Returns a String array containing all dates for the week of the date passed in
      * @param calendar A Calendar object set to a date in the week that you would like to get the dates for
      */
-    private static String[] getDatesForSpecificWeek(Calendar calendar){
+    public static String[] getDatesForSpecificWeek(Calendar calendar){
         String[] dates = new String[7];
 
         //Sets the start of the week to Monday

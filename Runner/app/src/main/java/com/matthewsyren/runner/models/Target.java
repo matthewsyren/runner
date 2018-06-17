@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import com.matthewsyren.runner.R;
 import com.matthewsyren.runner.services.FirebaseService;
-import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.NetworkUtilities;
 
 public class Target
@@ -114,7 +113,6 @@ public class Target
         intent.setAction(FirebaseService.ACTION_GET_TARGETS_AND_RUNS);
         bundle.putString(FirebaseService.USER_KEY_EXTRA, userKey);
         intent.putExtra(FirebaseService.RESULT_RECEIVER, resultReceiver);
-        intent.putExtra(FirebaseService.DATES_EXTRA, DateUtilities.getDatesForCurrentWeek());
         intent.putExtras(bundle);
         context.startService(intent);
 

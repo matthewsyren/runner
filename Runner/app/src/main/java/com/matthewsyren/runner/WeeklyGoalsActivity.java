@@ -1,5 +1,6 @@
 package com.matthewsyren.runner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -21,8 +23,8 @@ import com.matthewsyren.runner.models.Target;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.NumberUtilities;
-import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.WeeklyGoalsUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
@@ -150,7 +152,8 @@ public class WeeklyGoalsActivity
     //Displays the user's targets
     private void displayTargets(Target target) {
         //Displays the user's targets in the appropriate Views
-        mEtDurationTarget.setText(String.valueOf(target.getDurationTarget()));
+        mEtDurationTarget.setText(
+                String.valueOf(RunInformationFormatUtilities.getDurationInMinutes(target.getDurationTarget())));
 
         mEtDistanceTarget.setText(
                 getString(R.string.target_three_decimal_places,
@@ -193,9 +196,19 @@ public class WeeklyGoalsActivity
             averageSpeed = averageSpeed.replaceAll(",", ".");
 
             //Updates the values
-            mTarget.setDistanceTarget(RunInformationFormatUtilities.getDistanceInMetres(Double.parseDouble(distanceTarget), this));
-            mTarget.setDurationTarget(Integer.parseInt(mEtDurationTarget.getText().toString()));
-            mTarget.setAverageSpeedTarget(RunInformationFormatUtilities.getDistanceInMetres(Double.parseDouble(averageSpeed), this));
+            mTarget.setDistanceTarget(
+                    RunInformationFormatUtilities.getDistanceInMetres(
+                            Double.parseDouble(distanceTarget),
+                            this));
+
+            mTarget.setDurationTarget(
+                    RunInformationFormatUtilities.getDurationInSeconds(
+                            Integer.parseInt(mEtDurationTarget.getText().toString())));
+
+            mTarget.setAverageSpeedTarget(
+                    RunInformationFormatUtilities.getDistanceInMetres(
+                            Double.parseDouble(averageSpeed),
+                            this));
 
             //Sends the updated targets to Firebase
             mTarget.updateTargets(this, UserAccountUtilities.getUserKey(this), new DataReceiver(new Handler()));
@@ -234,7 +247,6 @@ public class WeeklyGoalsActivity
 
         //Converts the totalDistance to the appropriate unit and the duration to minutes
         totalDistance = RunInformationFormatUtilities.getDistance(totalDistance, this);
-        totalDuration /= 60;
 
         //Displays the user's progress towards their targets
         mTvDistanceTarget.setText(
@@ -244,8 +256,8 @@ public class WeeklyGoalsActivity
 
         mTvDurationTarget.setText(
                 getString(R.string.duration_target_progress,
-                        totalDuration,
-                        mTarget.getDurationTarget()));
+                        RunInformationFormatUtilities.getDurationInMinutes(totalDuration),
+                        RunInformationFormatUtilities.getDurationInMinutes(mTarget.getDurationTarget())));
 
         mTvAverageSpeedTarget.setText(
                 getString(R.string.average_speed_target_progress,
@@ -301,6 +313,22 @@ public class WeeklyGoalsActivity
         }
     }
 
+    /*
+     * Hides the keyboard
+     * Adapted from https://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+     */
+    private void hideKeyboard(){
+        View view = getCurrentFocus();
+        if(view != null){
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            if(inputMethodManager != null){
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
+    }
+
+
     //Used to retrieve results from the FirebaseService
     private class DataReceiver
             extends ResultReceiver {
@@ -319,14 +347,16 @@ public class WeeklyGoalsActivity
                 mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
                 mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
 
-                //Gets dates for the previous week
                 String[] datesInPreviousWeek = DateUtilities.getDatesForPreviousWeek();
 
-                //Sets consecutiveTargetsMet to 0 if the user didn't meet their target in the previous week
-                if(!Arrays.asList(datesInPreviousWeek).contains(mTarget.getDateOfLastMetTarget()) && mTarget.getConsecutiveTargetsMet() > 0){
-                    mTarget.setConsecutiveTargetsMet(0);
+                //Updates the consecutiveTargetsMet value for the user if it hasn't been updated already
+                if(!Arrays.asList(datesInPreviousWeek).contains(mTarget.getDateOfLastMetTarget())){
+                    mTarget = WeeklyGoalsUtilities.updateConsecutiveTargetsMet(mRuns, mTarget);
                     mTarget.updateTargets(getApplicationContext(), UserAccountUtilities.getUserKey(getApplicationContext()), null);
                 }
+
+                //Gets the runs for the current week to display
+                mRuns = WeeklyGoalsUtilities.getRunsForThisWeek(mRuns);
 
                 if(mTarget != null && mRuns != null){
                     //Displays the user's progress towards their targets
@@ -346,6 +376,9 @@ public class WeeklyGoalsActivity
 
                 //Updates the Widgets
                 WidgetUtilities.updateWidgets(getApplicationContext());
+
+                //Hides the keyboard
+                hideKeyboard();
             }
             else if(resultCode == FirebaseService.ACTION_GET_USER_KEY_RESULT_CODE){
                 //Gets the user's key

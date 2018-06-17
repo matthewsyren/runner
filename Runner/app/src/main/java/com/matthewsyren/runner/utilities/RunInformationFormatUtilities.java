@@ -142,4 +142,28 @@ public class RunInformationFormatUtilities {
             return (int) Math.round(totalDistance);
         }
     }
+
+    /**
+     * Converts metres to kilometres
+     * @param distance The distance in metres
+     */
+    public static double getDistanceInKilometres(double distance){
+        return distance / METRES_IN_ONE_KILOMETRE;
+    }
+
+    /**
+     * Converts seconds to minutes
+     * @param duration The duration in seconds
+     */
+    public static int getDurationInMinutes(int duration){
+        return duration / SECONDS_IN_ONE_MINUTE;
+    }
+
+    /**
+     * Converts minutes to seconds
+     * @param duration The duration in minutes
+     */
+    public static int getDurationInSeconds(int duration){
+        return duration * SECONDS_IN_ONE_MINUTE;
+    }
 }

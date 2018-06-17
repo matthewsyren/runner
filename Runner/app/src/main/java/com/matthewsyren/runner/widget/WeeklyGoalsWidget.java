@@ -75,7 +75,6 @@ public class WeeklyGoalsWidget
 
             //Converts the totalDistance to the appropriate unit and the duration to minutes
             totalDistance = RunInformationFormatUtilities.getDistance(totalDistance, context);
-            totalDuration /= 60;
 
             //Displays the user's distance progress
             int distanceProgress = WeeklyGoalsUtilities.getDistanceProgress(
@@ -99,8 +98,8 @@ public class WeeklyGoalsWidget
                     R.id.tv_widget_duration_target,
                     context.getString(
                             R.string.duration_target_progress,
-                            totalDuration,
-                            mTarget.getDurationTarget()));
+                            RunInformationFormatUtilities.getDurationInMinutes(totalDuration),
+                            RunInformationFormatUtilities.getDurationInMinutes(mTarget.getDurationTarget())));
 
             //Displays the user's duration progress
             int averageSpeedProgress = WeeklyGoalsUtilities.getAverageSpeedProgress(
@@ -198,10 +197,14 @@ public class WeeklyGoalsWidget
 
             if(resultCode == FirebaseService.ACTION_GET_TARGETS_AND_RUNS_RESULT_CODE){
                 mRuns = resultData.getParcelableArrayList(FirebaseService.RUNS_EXTRA);
-                mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
 
-                //Updates all the Widgets
-                updateWidgets();
+                if(mRuns != null){
+                    mRuns = WeeklyGoalsUtilities.getRunsForThisWeek(mRuns);
+                    mTarget = resultData.getParcelable(FirebaseService.TARGET_EXTRA);
+
+                    //Updates all the Widgets
+                    updateWidgets();
+                }
             }
         }
     }

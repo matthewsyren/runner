@@ -45,6 +45,7 @@ public class WeeklyGoalsActivity
     @BindView(R.id.tv_average_speed_target_label) TextView mTvAverageSpeedTargetLabel;
     @BindView(R.id.tv_average_speed_target) TextView mTvAverageSpeedTarget;
     @BindView(R.id.tv_consecutive_targets_met) TextView mTvConsecutiveTargetsMet;
+    @BindView(R.id.tv_date_of_last_met_target) TextView mTvDateOfLastMetTarget;
     @BindView(R.id.sv_weekly_goals) ScrollView mSvWeeklyGoals;
     @BindView(R.id.pb_weekly_goals) ProgressBar mPbWeeklyGoals;
     @BindView(R.id.pb_distance_target) ProgressBar mPbDistanceTarget;
@@ -153,16 +154,28 @@ public class WeeklyGoalsActivity
     private void displayTargets(Target target) {
         //Displays the user's targets in the appropriate Views
         mEtDurationTarget.setText(
-                String.valueOf(RunInformationFormatUtilities.getDurationInMinutes(target.getDurationTarget())));
+                String.valueOf(RunInformationFormatUtilities.getDurationInMinutes(
+                        target.getDurationTarget())));
 
         mEtDistanceTarget.setText(
-                getString(R.string.target_three_decimal_places,
-                        RunInformationFormatUtilities.getDistance(target.getDistanceTarget(), this)));
+                getString(R.string.target_three_decimal_places, 
+                        RunInformationFormatUtilities.getDistance(
+                                target.getDistanceTarget(),
+                                this)));
 
         mEtAverageSpeedTarget.setText(
-                String.valueOf(NumberUtilities.roundOffToOneDecimalPlace(RunInformationFormatUtilities.getDistance(target.getAverageSpeedTarget(), this))));
+                String.valueOf(NumberUtilities.roundOffToOneDecimalPlace(
+                        RunInformationFormatUtilities.getDistance(
+                                target.getAverageSpeedTarget(),
+                                this))));
 
-        mTvConsecutiveTargetsMet.setText(getString(R.string.consecutive_targets_met, target.getConsecutiveTargetsMet()));
+        mTvConsecutiveTargetsMet.setText(
+                getString(R.string.consecutive_targets_met,
+                        target.getConsecutiveTargetsMet()));
+
+        mTvDateOfLastMetTarget.setText(
+                getString(R.string.date_of_last_met_target,
+                        mTarget.getDateOfLastMetTarget()));
 
         //Hides the ProgressBar and displays the ScrollView
         mSvWeeklyGoals.setVisibility(View.VISIBLE);
@@ -364,7 +377,7 @@ public class WeeklyGoalsActivity
                     displayTargets(mTarget);
                 }
                 else{
-                    Toast.makeText(getApplicationContext(), getString(R.string.error_no_weekly_targets_fetched), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.error_no_weekly_targets_fetched, Toast.LENGTH_LONG).show();
                     mPbWeeklyGoals.setVisibility(View.GONE);
                 }
             }

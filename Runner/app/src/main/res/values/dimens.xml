@@ -23,7 +23,7 @@
 
     <!-- WeeklyGoalsActivity -->
     <dimen name="weekly_goals_margin">48dp</dimen>
-    <dimen name="consecutive_targets_met_text_size">22sp</dimen>
+    <dimen name="weekly_goals_additional_information_text_size">22sp</dimen>
     <dimen name="target_edit_text_width">90dp</dimen>
     <dimen name="target_edit_text_text_size">18sp</dimen>
 

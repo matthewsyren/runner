@@ -35,4 +35,11 @@
         <item name="android:textAlignment">center</item>
         <item name="android:layout_margin">@dimen/statistics_caption_margin</item>
     </style>
+
+    <style name="WeeklyGoalsAdditionalInformationStyle">
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+        <item name="android:textSize">@dimen/weekly_goals_additional_information_text_size</item>
+    </style>
 </resources>

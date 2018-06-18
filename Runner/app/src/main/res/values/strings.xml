@@ -76,6 +76,7 @@
     <string name="average_speed_kmh">Average speed (km/h):</string>
     <string name="average_speed_mph">Average speed (mph):</string>
     <string name="consecutive_targets_met">Consecutive targets met: %d</string>
+    <string name="date_of_last_met_target">Date of last met target: %s</string>
     <string name="error_no_weekly_targets_fetched">An error occurred while fetching your targets, please try again</string>
     <string name="error_no_duration_target">Please set a time target</string>
     <string name="error_no_distance_target">Please set a distance target</string>

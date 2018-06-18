@@ -14,6 +14,7 @@
     <!-- RunsActivity -->
     <dimen name="run_image_width">150dp</dimen>
     <dimen name="separator_size">1dp</dimen>
+    <dimen name="no_runs_completed_text_size">18sp</dimen>
 
     <!-- StatisticsActivity -->
     <dimen name="run_statistics_height">26sp</dimen>

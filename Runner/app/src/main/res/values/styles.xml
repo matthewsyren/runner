@@ -50,4 +50,12 @@
         <item name="android:textSize">@dimen/widget_message_text_size</item>
         <item name="android:textColor">@color/colorBlack</item>
     </style>
+
+    <style name="NoRunsCompletedStyle">
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_margin">@dimen/activity_horizontal_margin</item>
+        <item name="android:textSize">@dimen/no_runs_completed_text_size</item>
+    </style>
 </resources>

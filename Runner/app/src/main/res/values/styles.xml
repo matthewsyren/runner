@@ -42,4 +42,12 @@
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
         <item name="android:textSize">@dimen/weekly_goals_additional_information_text_size</item>
     </style>
+
+    <style name="WidgetMessageStyle">
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_margin">@dimen/widget_margin</item>
+        <item name="android:textSize">@dimen/widget_message_text_size</item>
+        <item name="android:textColor">@color/colorBlack</item>
+    </style>
 </resources>

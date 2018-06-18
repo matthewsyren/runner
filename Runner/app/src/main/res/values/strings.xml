@@ -92,6 +92,7 @@
 
     <!-- WeeklyGoalsWidget -->
     <string name="widget_signed_out">You are signed out, please sign in to view your targets</string>
+    <string name="widget_fetching_targets">Fetching targets&#8230;</string>
 
     <!-- WeeklyGoalsService -->
     <string name="notification_met_target_title">You met your target!</string>

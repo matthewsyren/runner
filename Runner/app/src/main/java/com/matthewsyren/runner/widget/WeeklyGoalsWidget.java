@@ -121,7 +121,8 @@ public class WeeklyGoalsWidget
             views.setOnClickPendingIntent(R.id.tv_widget_heading, pendingIntent);
 
             //Displays the Widget when the user is signed in
-            views.setViewVisibility(R.id.ll_widget_weekly_goals, View.VISIBLE);
+            views.setViewVisibility(R.id.ll_widget_weekly_goals_progress, View.VISIBLE);
+            views.setViewVisibility(R.id.tv_widget_fetching_targets, View.GONE);
         }
         else{
             //Fetches the Widget layout that displays a signed out message

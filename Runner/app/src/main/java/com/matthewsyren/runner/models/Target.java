@@ -24,9 +24,9 @@ public class Target
     public Target(){
         consecutiveTargetsMet = 0;
         dateOfLastMetTarget = "";
-        distanceTarget = 21;
-        durationTarget = 180;
-        averageSpeedTarget = 7;
+        distanceTarget = 5000;
+        durationTarget = 1800;
+        averageSpeedTarget = 7000;
     }
 
     Target(Parcel in) {

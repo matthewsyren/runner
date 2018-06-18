@@ -117,6 +117,7 @@ public class MainActivity
     @Override
     protected void onResume() {
         super.onResume();
+        super.displayUserDetails();
 
         //Sets the selected item in the Navigation Drawer to the home page
         super.setSelectedNavItem(R.id.nav_home);

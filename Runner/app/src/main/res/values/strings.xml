@@ -18,7 +18,7 @@
     <string name="sign_in_cancelled">Sign in cancelled</string>
 
     <!-- MainActivity -->
-    <string name="error_location_permission_not_granted">You need to allow location tracking in order to start a run</string>
+    <string name="error_location_permission_not_granted">You need to allow location tracking in order to track a run</string>
     <string name="start">Start</string>
     <string name="end">End</string>
     <string name="error_no_movement">No movement was detected</string>

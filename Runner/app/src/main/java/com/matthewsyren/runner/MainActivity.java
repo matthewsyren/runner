@@ -20,7 +20,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -50,8 +49,8 @@ import com.matthewsyren.runner.models.Run;
 import com.matthewsyren.runner.services.FirebaseService;
 import com.matthewsyren.runner.utilities.DateUtilities;
 import com.matthewsyren.runner.utilities.NetworkUtilities;
-import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.RunInformationFormatUtilities;
+import com.matthewsyren.runner.utilities.UserAccountUtilities;
 import com.matthewsyren.runner.utilities.WidgetUtilities;
 
 import java.io.ByteArrayOutputStream;
@@ -90,6 +89,7 @@ public class MainActivity
     private Timer mTimer;
     private Location mPreviousLocation;
     private AlertDialog mStartRunningDialog = null;
+    private boolean mIsRunPaused = false;
 
     //Time constants
     private static final int DOUBLE_BACK_PRESS_TIME_WINDOW = 6000;
@@ -179,7 +179,7 @@ public class MainActivity
                                         .signOut(getApplicationContext());
 
                                 //Resets the Activity
-                                stopLocationTracking(false);
+                                stopLocationTracking();
                                 restartActivity();
                             }
                             else{
@@ -198,12 +198,12 @@ public class MainActivity
                 }
             };
 
-            //Sets the content for the Dialog
+            //Sets the content for the AlertDialog
             alertDialogBuilder.setMessage(R.string.leave_page_while_running_confirmation)
                     .setPositiveButton(R.string.yes, onClickListener)
                     .setNegativeButton(R.string.no, onClickListener);
 
-            //Displays the Dialog
+            //Displays the AlertDialog
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
@@ -344,10 +344,12 @@ public class MainActivity
 
         //Starts or stops a run, depending on whether a run has been started or not
         if(mIsRunning){
+            mIsRunning = true;
+            mIsRunPaused = false;
             checkLocationTrackingPermission();
         }
         else {
-            stopLocationTracking(true);
+            pauseRun();
         }
     }
 
@@ -383,7 +385,7 @@ public class MainActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if(mLocationManager != null){
-            //Displays a Dialog to the user telling them to start running
+            //Displays an AlertDialog to the user telling them to start running
             displayStartRunningDialog();
 
             //Adapted from https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -440,7 +442,8 @@ public class MainActivity
     }
 
     //Stops location tracking
-    private void stopLocationTracking(boolean showDialog) throws SecurityException{
+    private void stopLocationTracking() throws SecurityException{
+        mIsRunPaused = false;
         mIsRunning = false;
         LatLng currentLocation = getCurrentLocation();
 
@@ -457,32 +460,13 @@ public class MainActivity
         mClRunInformation.setVisibility(View.GONE);
 
         //Removes the LocationListener and changes the FloatingActionButton icon
-        mLocationManager.removeUpdates(mLocationListener);
-        mLocationManager = null;
+        if(mLocationManager != null){
+            mLocationManager.removeUpdates(mLocationListener);
+            mLocationManager = null;
+        }
+
         mLocationListener = null;
         mFabToggleRun.setImageResource(R.drawable.ic_baseline_directions_run_24px);
-
-        if(mLatLngBuilderCount > 1 && mDistanceTravelled >= 1){
-            /*
-             * Zooms out to display the entire route taken by the user
-             * Adapted from https://stackoverflow.com/questions/14828217/android-map-v2-zoom-to-show-all-the-markers?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-             */
-            LatLngBounds bounds = mLatLngBoundsBuilder.build();
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 300);
-            mGoogleMap.animateCamera(cameraUpdate);
-
-            if(showDialog){
-                //Displays Dialog that asks the user if they'd like to save their run
-                displaySummaryDialog();
-            }
-        }
-        else {
-            //Resets the map and tells the user that no movement was detected
-            if(showDialog){
-                Toast.makeText(getApplicationContext(), getString(R.string.error_no_movement), Toast.LENGTH_LONG).show();
-            }
-            restartActivity();
-        }
     }
 
     //Displays the run's information
@@ -501,10 +485,12 @@ public class MainActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //Displays the appropriate data
-                        displayRunDuration();
-                        displayRunDistance();
-                        displayRunAverageSpeed();
+                        if(!mIsRunPaused){
+                            //Displays the appropriate data
+                            displayRunDuration();
+                            displayRunDistance();
+                            displayRunAverageSpeed();
+                        }
                     }
                 });
             }
@@ -527,6 +513,32 @@ public class MainActivity
         mTvRunAverageSpeed.setText(RunInformationFormatUtilities.getFormattedRunAverageSpeed(mDistanceTravelled, mRunDuration, this));
     }
 
+    //Pauses the run
+    private void pauseRun(){
+        mIsRunPaused = true;
+        mLocationManager.removeUpdates(mLocationListener);
+        mLocationManager = null;
+
+        if(mLatLngBuilderCount > 1 && mDistanceTravelled >= 1){
+            /*
+             * Zooms out to display the entire route taken by the user
+             * Adapted from https://stackoverflow.com/questions/14828217/android-map-v2-zoom-to-show-all-the-markers?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+             */
+            LatLngBounds bounds = mLatLngBoundsBuilder.build();
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 300);
+            mGoogleMap.animateCamera(cameraUpdate);
+
+            //Displays an AlertDialog that asks the user if they'd like to save their run
+            displaySummaryDialog();
+        }
+        else {
+            //Resets the map and tells the user that no movement was detected
+            Toast.makeText(getApplicationContext(), getString(R.string.error_no_movement), Toast.LENGTH_LONG).show();
+            stopLocationTracking();
+            restartActivity();
+        }
+    }
+
     //Adds a marker to the specified location
     private void addMarkerToLocation(LatLng location, String markerTitle){
         mGoogleMap.addMarker( new MarkerOptions()
@@ -545,10 +557,8 @@ public class MainActivity
 
     //Returns the current location in a LatLng object
     private LatLng getCurrentLocation() throws SecurityException{
-        Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        if(location != null){
-            return new LatLng(location.getLatitude(), location.getLongitude());
+        if(mPreviousLocation != null){
+            return new LatLng(mPreviousLocation.getLatitude(), mPreviousLocation.getLongitude());
         }
         else{
             return null;
@@ -580,27 +590,30 @@ public class MainActivity
     }
 
     /*
-     * Displays a Dialog telling the user to start their run
+     * Displays an AlertDialog telling the user to start their run
      */
     private void displayStartRunningDialog(){
         //Creates an AlertDialog to ask the user if they'd like to save their run
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_start_running, null);
+        View view = View.inflate(this, R.layout.dialog_start_running, null);
         alertDialogBuilder.setView(view);
         mStartRunningDialog = alertDialogBuilder.create();
         mStartRunningDialog.show();
     }
 
     /*
-     * Displays a Dialog which allows the user to save their run
+     * Displays an AlertDialog which allows the user to save their run
      * Adapted from https://developer.android.com/guide/topics/ui/dialogs.html
      */
     private void displaySummaryDialog(){
+        //Displays the appropriate data
+        displayRunDuration();
+        displayRunDistance();
+        displayRunAverageSpeed();
+
         //Creates an AlertDialog to ask the user if they'd like to save their run
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_run_summary, null);
+        View view = View.inflate(this, R.layout.dialog_run_summary, null);
         alertDialogBuilder.setView(view);
 
         //View assignments
@@ -614,6 +627,9 @@ public class MainActivity
             public void onClick(DialogInterface dialog, int which) {
                 switch(which){
                     case DialogInterface.BUTTON_POSITIVE:
+                        //Stops location tracking
+                        stopLocationTracking();
+
                         //Displays the appropriate message (based on whether there is an Internet connection)
                         if(NetworkUtilities.isOnline(getApplicationContext())){
                             Toast.makeText(getApplicationContext(), getString(R.string.uploading), Toast.LENGTH_LONG).show();
@@ -628,6 +644,10 @@ public class MainActivity
                         saveMapScreenshot();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
+                        //Stops location tracking
+                        stopLocationTracking();
+
+                        //Displays a message to the user telling them they didn't save their run
                         Toast.makeText(getApplicationContext(), getString(R.string.run_not_saved), Toast.LENGTH_LONG).show();
 
                         //Restarts the Activity
@@ -651,35 +671,27 @@ public class MainActivity
         alertDialogBuilder.setPositiveButton(R.string.yes, onClickListener)
                 .setNegativeButton(R.string.no, onClickListener);
 
-        //Displays the Dialog and adds a Listener to require two clicks on the back button to close the Dialog
+        //Displays the AlertDialog and adds a Listener to require two clicks on the back button to close the AlertDialog
         final AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                /*
-                 * Makes the user click the back button twice to close the Dialog (to make sure the user doesn't delete their run accidentally)
-                 * Adapted from https://stackoverflow.com/questions/8430805/clicking-the-back-button-twice-to-exit-an-activity?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-                 */
-                if(!mIsBackPressedOnce) {
-                    //Prompts for confirmation
-                    Toast.makeText(getApplicationContext(), getString(R.string.dialog_cancellation_confirmation), Toast.LENGTH_LONG).show();
-                    mIsBackPressedOnce = true;
-                    alertDialog.show();
-                }
-                else{
-                    //Closes the Dialog and resets the map
-                    Toast.makeText(getApplicationContext(), getString(R.string.run_not_saved), Toast.LENGTH_LONG).show();
-                    restartActivity();
-                }
+                //Restarts the run if the user cancels the AlertDialog
+                mIsRunPaused = false;
+                mIsRunning = true;
 
-                //Creates a window of 6 seconds when the user can click the back button for a second time
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mIsBackPressedOnce = false;
+                try{
+                    //Requests location updates
+                    mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+                    if(mLocationManager != null){
+                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
                     }
-                }, DOUBLE_BACK_PRESS_TIME_WINDOW);
+                }
+                catch(SecurityException s){
+                    Toast.makeText(getApplicationContext(), R.string.error_location_permission_not_granted, Toast.LENGTH_LONG).show();
+                }
             }
         });
         alertDialog.show();
@@ -747,6 +759,11 @@ public class MainActivity
         mPolylineOptions = null;
         mGoogleMap.clear();
         mLatLngBuilderCount = 0;
+
+        //Displays the appropriate data
+        displayRunDuration();
+        displayRunDistance();
+        displayRunAverageSpeed();
 
         //Zooms to last known location
         if(mPreviousLocation != null){

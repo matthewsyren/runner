@@ -66,7 +66,7 @@ public class WeeklyGoalsUtilities {
 
             do{
                 calendar.add(Calendar.DAY_OF_WEEK, 1);
-            } while(calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY);
+            } while(calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY);
 
             calendar.set(Calendar.AM_PM, Calendar.AM);
             calendar.set(Calendar.HOUR, 0);

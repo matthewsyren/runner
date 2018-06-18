@@ -96,13 +96,15 @@ public class RunInformationFormatUtilities {
             //Calculates the speed in km/h
             return context.getString(
                     R.string.kilometres_per_hour,
-                    String.valueOf(getUsersAverageSpeedInKilometresPerHour(distanceTravelled, runDuration)));
+                    NumberUtilities.roundOffToOneDecimalPlace(
+                            getUsersAverageSpeedInKilometresPerHour(distanceTravelled, runDuration)));
         }
         else{
             //Calculates the speed in mph
             return context.getString(
                     R.string.miles_per_hour,
-                    String.valueOf(getUsersAverageSpeedInMilesPerHour(distanceTravelled, runDuration)));
+                    NumberUtilities.roundOffToOneDecimalPlace(
+                            getUsersAverageSpeedInMilesPerHour(distanceTravelled, runDuration)));
         }
     }
 

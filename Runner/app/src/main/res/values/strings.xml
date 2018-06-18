@@ -29,8 +29,8 @@
     <string name="yards">%s yds</string>
     <string name="kilometres">%.3f km</string>
     <string name="miles">%.3f mi</string>
-    <string name="kilometres_per_hour">%s km/h</string>
-    <string name="miles_per_hour">%s mph</string>
+    <string name="kilometres_per_hour">%.1f km/h</string>
+    <string name="miles_per_hour">%.1f mph</string>
     <string name="run_summary">Run summary</string>
     <string name="save_run_confirmation">Would you like to save this run?</string>
     <string name="yes">Yes</string>
@@ -86,6 +86,7 @@
     <string name="duration_target_progress">%d/%d</string>
     <string name="average_speed_target_progress">%.1f/%.1f</string>
     <string name="target_three_decimal_places">%.3f</string>
+    <string name="target_one_decimal_place">%.1f</string>
     <string name="target">Target</string>
     <string name="n_a">N/A</string>
 

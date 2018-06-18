@@ -159,15 +159,17 @@ public class WeeklyGoalsActivity
 
         mEtDistanceTarget.setText(
                 getString(R.string.target_three_decimal_places,
-                        RunInformationFormatUtilities.getDistance(
-                                target.getDistanceTarget(),
-                                this)));
+                        NumberUtilities.roundOffToThreeDecimalPlaces(
+                                RunInformationFormatUtilities.getDistance(
+                                        target.getDistanceTarget(),
+                                        this))));
 
         mEtAverageSpeedTarget.setText(
-                String.valueOf(NumberUtilities.roundOffToOneDecimalPlace(
-                        RunInformationFormatUtilities.getDistance(
-                                target.getAverageSpeedTarget(),
-                                this))));
+                getString(R.string.target_one_decimal_place,
+                        NumberUtilities.roundOffToOneDecimalPlace(
+                                RunInformationFormatUtilities.getDistance(
+                                        target.getAverageSpeedTarget(),
+                                        this))));
 
         mTvConsecutiveTargetsMet.setText(
                 getString(R.string.consecutive_targets_met,

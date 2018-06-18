@@ -87,6 +87,7 @@
     <string name="average_speed_target_progress">%.1f/%.1f</string>
     <string name="target_three_decimal_places">%.3f</string>
     <string name="target">Target</string>
+    <string name="n_a">N/A</string>
 
     <!-- WeeklyGoalsWidget -->
     <string name="widget_signed_out">You are signed out, please sign in to view your targets</string>

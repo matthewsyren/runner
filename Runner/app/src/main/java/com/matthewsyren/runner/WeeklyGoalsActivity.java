@@ -158,7 +158,7 @@ public class WeeklyGoalsActivity
                         target.getDurationTarget())));
 
         mEtDistanceTarget.setText(
-                getString(R.string.target_three_decimal_places, 
+                getString(R.string.target_three_decimal_places,
                         RunInformationFormatUtilities.getDistance(
                                 target.getDistanceTarget(),
                                 this)));
@@ -173,9 +173,16 @@ public class WeeklyGoalsActivity
                 getString(R.string.consecutive_targets_met,
                         target.getConsecutiveTargetsMet()));
 
-        mTvDateOfLastMetTarget.setText(
-                getString(R.string.date_of_last_met_target,
-                        mTarget.getDateOfLastMetTarget()));
+        if(!TextUtils.isEmpty(mTarget.getDateOfLastMetTarget())){
+            mTvDateOfLastMetTarget.setText(
+                    getString(R.string.date_of_last_met_target,
+                            mTarget.getDateOfLastMetTarget()));
+        }
+        else{
+            mTvDateOfLastMetTarget.setText(
+                    getString(R.string.date_of_last_met_target,
+                            getString(R.string.n_a)));
+        }
 
         //Hides the ProgressBar and displays the ScrollView
         mSvWeeklyGoals.setVisibility(View.VISIBLE);

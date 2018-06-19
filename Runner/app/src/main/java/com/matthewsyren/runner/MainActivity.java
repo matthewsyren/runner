@@ -2,6 +2,7 @@ package com.matthewsyren.runner;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -11,9 +12,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -357,6 +361,8 @@ public class MainActivity
     //Checks to see if the user has granted permission for location tracking
     private void checkLocationTrackingPermission() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            mIsRunning = false;
+
             //Requests the ACCESS_FINE_LOCATION permission from the user
             ActivityCompat.requestPermissions(
                     MainActivity.this,
@@ -371,6 +377,9 @@ public class MainActivity
 
     //Starts tracking the user's run
     private void startLocationTracking() throws SecurityException {
+        //Sets the user's status to running
+        mIsRunning = true;
+
         //Updates the icon for the FloatingActionButton
         mFabToggleRun.setImageResource(R.drawable.ic_stop_black_24dp);
 
@@ -386,59 +395,88 @@ public class MainActivity
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         if(mLocationManager != null){
-            //Displays an AlertDialog to the user telling them to start running
-            displayStartRunningDialog();
+            //Checks if the user has location tracking turned on
+            if(mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                //Displays an AlertDialog to the user telling them to start running
+                displayStartRunningDialog();
 
-            //Adapted from https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-            mLocationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    //Updates location and draws a polyline from the previous location to the current location
-                    LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                //Adapted from https://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+                mLocationListener = new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        //Updates location and draws a polyline from the previous location to the current location
+                        LatLng newLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    //Displays a marker at the start of the route
-                    if(mLatLngBuilderCount == 0){
-                        addMarkerToLocation(newLocation, getString(R.string.start));
+                        //Displays a marker at the start of the route
+                        if(mLatLngBuilderCount == 0){
+                            addMarkerToLocation(newLocation, getString(R.string.start));
+                        }
+
+                        //Hides the Dialog and zooms to the user's location
+                        if(mStartRunningDialog != null){
+                            mStartRunningDialog.hide();
+                            mStartRunningDialog = null;
+                        }
+
+                        drawPolyline(newLocation);
+                        zoomToLocation(newLocation);
+
+                        //Includes the location in the LatLngBoundsBuilder and increments the count
+                        mLatLngBoundsBuilder.include(newLocation);
+                        mLatLngBuilderCount++;
+
+                        //Updates the distance travelled
+                        if(mPreviousLocation != null){
+                            mDistanceTravelled += location.distanceTo(mPreviousLocation);
+                        }
+                        mPreviousLocation = location;
                     }
 
-                    //Hides the Dialog and zooms to the user's location
-                    if(mStartRunningDialog != null){
-                        mStartRunningDialog.hide();
-                        mStartRunningDialog = null;
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+
                     }
 
-                    drawPolyline(newLocation);
-                    zoomToLocation(newLocation);
+                    @Override
+                    public void onProviderEnabled(String provider) {
 
-                    //Includes the location in the LatLngBoundsBuilder and increments the count
-                    mLatLngBoundsBuilder.include(newLocation);
-                    mLatLngBuilderCount++;
-
-                    //Updates the distance travelled
-                    if(mPreviousLocation != null){
-                        mDistanceTravelled += location.distanceTo(mPreviousLocation);
                     }
-                    mPreviousLocation = location;
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+                        /*
+                         * Vibrates the phone and tells the user to turn on their location tracking
+                         * Adapted from https://stackoverflow.com/questions/13950338/how-to-make-an-android-device-vibrate
+                         */
+                        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+                        if(vibrator != null){
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                                vibrator.vibrate(VibrationEffect.createOneShot(750, VibrationEffect.DEFAULT_AMPLITUDE));
+                            }
+                            else{
+                                vibrator.vibrate(750);
+                            }
+                        }
+
+                        Toast.makeText(getApplicationContext(), R.string.error_no_location_provider, Toast.LENGTH_LONG).show();
+                    }
+                };
+
+                //Starts the location tracking
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            }
+            else{
+                //Stops the timer and resets the duration
+                if(mTimer != null){
+                    mTimer.cancel();
+                    mRunDuration = -1;
                 }
 
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };
-
-            //Starts the location tracking
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+                //Stops location tracking and tells the user to turn their location on
+                Toast.makeText(getApplicationContext(), R.string.error_no_location_provider, Toast.LENGTH_LONG).show();
+                stopLocationTracking();
+            }
         }
     }
 
@@ -461,11 +499,11 @@ public class MainActivity
         mClRunInformation.setVisibility(View.GONE);
 
         //Removes the LocationListener and changes the FloatingActionButton icon
-        if(mLocationManager != null){
+        if(mLocationManager != null && mLocationListener != null){
             mLocationManager.removeUpdates(mLocationListener);
-            mLocationManager = null;
         }
 
+        mLocationManager = null;
         mLocationListener = null;
         mFabToggleRun.setImageResource(R.drawable.ic_baseline_directions_run_24px);
     }

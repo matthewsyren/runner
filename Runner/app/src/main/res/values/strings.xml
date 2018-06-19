@@ -43,6 +43,7 @@
     <string name="action_cancelled">Action cancelled</string>
     <string name="back_pressed_during_run_confirmation">Press back again to leave the app. Note, if you leave before saving your run, your run information will be lost</string>
     <string name="start_running">Picking up your location&#8230; Start running now, your route will automatically be tracked</string>
+    <string name="error_no_location_provider">Please ensure that you have location tracking on your device turned on</string>
 
     <!-- RunsActivity -->
     <string name="run_date">Date: %s</string>

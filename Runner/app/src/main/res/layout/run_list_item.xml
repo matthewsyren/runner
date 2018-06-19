@@ -62,9 +62,8 @@
         <ImageView
             android:id="@+id/iv_run_route"
             android:layout_width="@dimen/run_image_width"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
+            android:layout_height="@dimen/run_image_height"
+            android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             android:contentDescription="@string/iv_run_route_content_description"/>
     </android.support.constraint.ConstraintLayout>

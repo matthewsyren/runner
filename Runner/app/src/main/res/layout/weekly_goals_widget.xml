@@ -1,11 +1,11 @@
 <RelativeLayout
-    android:id="@+id/rl_widget_weekly_goals"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
     android:padding="@dimen/widget_margin">
     <include
+        android:id="@+id/i_weekly_goals_heading"
         layout="@layout/weekly_goals_widget_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

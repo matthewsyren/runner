@@ -1,0 +1,39 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:padding="@dimen/widget_margin">
+    <include
+        android:id="@+id/i_weekly_goals_heading"
+        layout="@layout/weekly_goals_widget_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/ll_widget_targets_met"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/i_weekly_goals_heading">
+        <TextView
+            android:id="@+id/tv_widget_consecutive_targets_met"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/MiniWidgetTextStyle"
+            android:layout_marginTop="@dimen/widget_weekly_goal_margin" />
+
+        <TextView
+            android:id="@+id/tv_widget_date_of_last_met_target"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/MiniWidgetTextStyle" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_widget_fetching_targets"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/widget_fetching_targets"
+        style="@style/WidgetMessageStyle" />
+</RelativeLayout>

@@ -58,4 +58,11 @@
         <item name="android:layout_margin">@dimen/activity_horizontal_margin</item>
         <item name="android:textSize">@dimen/no_runs_completed_text_size</item>
     </style>
+
+    <style name="MiniWidgetTextStyle">
+        <item name="android:textSize">@dimen/widget_message_text_size</item>
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:layout_margin">@dimen/mini_widget_margin</item>
+        <item name="android:textAlignment">center</item>
+    </style>
 </resources>

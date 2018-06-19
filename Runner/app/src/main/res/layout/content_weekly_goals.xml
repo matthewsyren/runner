@@ -183,6 +183,7 @@
                 style="@style/WeeklyGoalsAdditionalInformationStyle" />
         </LinearLayout>
     </ScrollView>
+
     <ProgressBar
         android:id="@+id/pb_weekly_goals"
         android:layout_width="wrap_content"

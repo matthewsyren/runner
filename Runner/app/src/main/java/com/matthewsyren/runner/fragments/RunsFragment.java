@@ -99,6 +99,10 @@ public class RunsFragment
     //Restores the data
     private void restoreData(Bundle savedInstanceState){
         //Restores the data
+        if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
+            mSelectedPosition = savedInstanceState.getInt(SELECTED_POSITION_BUNDLE_KEY);
+        }
+
         if(savedInstanceState.containsKey(RUNS_BUNDLE_KEY)){
             mRuns = savedInstanceState.getParcelableArrayList(RUNS_BUNDLE_KEY);
             displayRuns(mRuns);
@@ -106,10 +110,6 @@ public class RunsFragment
         else{
             //Requests the data from Firebase
             new Run().requestRuns(getContext(), UserAccountUtilities.getUserKey(getContext()), new DataReceiver(new Handler()));
-        }
-
-        if(savedInstanceState.containsKey(SELECTED_POSITION_BUNDLE_KEY)){
-            mSelectedPosition = savedInstanceState.getInt(SELECTED_POSITION_BUNDLE_KEY);
         }
 
         /*
@@ -215,9 +215,15 @@ public class RunsFragment
                     WidgetUtilities.updateWidgets(getContext());
 
                     //Restarts the Activity
-                    Intent intent = getActivity().getIntent();
-                    getActivity().finish();
-                    startActivity(intent);
+                    if(getActivity() != null){
+                        Intent intent = getActivity()
+                                .getIntent();
+
+                        getActivity()
+                                .finish();
+
+                        startActivity(intent);
+                    }
                 }
             }
         }

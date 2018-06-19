@@ -1,6 +1,7 @@
 package com.matthewsyren.runner.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -68,8 +69,7 @@ public class RunDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Inflates the layout for the Fragment
         View view = inflater.inflate(R.layout.fragment_run_detail, container, false);
         ButterKnife.bind(this, view);
@@ -120,38 +120,40 @@ public class RunDetailFragment extends Fragment {
      */
     private void shareRun(){
         if(mIsImageLoaded){
-            Bitmap bitmap = ((BitmapDrawable)mIvRunRoute.getDrawable()).getBitmap();
+            if(getContext() != null){
+                Bitmap bitmap = ((BitmapDrawable)mIvRunRoute.getDrawable()).getBitmap();
 
-            //Saves the image to storage
-            String path = MediaStore.Images.Media.insertImage(
-                    getContext().getContentResolver(),
-                    bitmap,
-                    "",
-                    null);
+                //Saves the image to storage
+                String path = MediaStore.Images.Media.insertImage(
+                        getContext().getContentResolver(),
+                        bitmap,
+                        "",
+                        null);
 
-            Uri uri = Uri.parse(path);
+                Uri uri = Uri.parse(path);
 
-            //Assembles the text to send to the user
-            String text = getString(R.string.share_run_introduction) +
-                    getString(R.string.run_duration, RunInformationFormatUtilities.getFormattedRunDuration(mRun.getRunDuration())) + "\n" +
-                    getString(R.string.run_distance, RunInformationFormatUtilities.getFormattedRunDistance(mRun.getDistanceTravelled(), getContext())) + "\n" +
-                    getString(R.string.run_average_speed, RunInformationFormatUtilities.getFormattedRunAverageSpeed(mRun.getDistanceTravelled(), mRun.getRunDuration(), getContext()));
+                //Assembles the text to send to the user
+                String text = getString(R.string.share_run_introduction) +
+                        getString(R.string.run_duration, RunInformationFormatUtilities.getFormattedRunDuration(mRun.getRunDuration())) + "\n" +
+                        getString(R.string.run_distance, RunInformationFormatUtilities.getFormattedRunDistance(mRun.getDistanceTravelled(), getContext())) + "\n" +
+                        getString(R.string.run_average_speed, RunInformationFormatUtilities.getFormattedRunAverageSpeed(mRun.getDistanceTravelled(), mRun.getRunDuration(), getContext()));
 
-            //Adds the run image and information to the Intent
-            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_STREAM, uri);
-            intent.putExtra(Intent.EXTRA_TEXT, text);
-            intent.setType("image/png");
-            startActivity(Intent.createChooser(intent,getString(R.string.share)));
-        }
-        else{
-            Toast.makeText(getContext(), R.string.error_null_bitmap, Toast.LENGTH_LONG).show();
+                //Adds the run image and information to the Intent
+                Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                intent.putExtra(Intent.EXTRA_TEXT, text);
+                intent.setType("image/png");
+                startActivity(Intent.createChooser(intent,getString(R.string.share)));
+            }
+            else{
+                Toast.makeText(getContext(), R.string.error_null_bitmap, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     //Checks to see if the user has granted permission for writing to storage
     private void checkStorageWritingPermission() {
-        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+        if(getContext() != null && ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             //Requests the WRITE_EXTERNAL_STORAGE permission from the user
             requestPermissions(
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
@@ -164,9 +166,12 @@ public class RunDetailFragment extends Fragment {
     }
 
     //Displays the run's information in the appropriate Views
+    @SuppressLint("ClickableViewAccessibility")
     private void displayRunInformation() {
         //Makes the ImageView zoomable
-        mIvRunRoute.setOnTouchListener(new ImageMatrixTouchHandler(getContext()));
+        if(getContext() != null){
+            mIvRunRoute.setOnTouchListener(new ImageMatrixTouchHandler(getContext()));
+        }
 
         if(mRun != null){
             //Loads the image

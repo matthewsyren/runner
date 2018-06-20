@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorWhite"
-    android:padding="@dimen/widget_margin">
+    android:layout_margin="@dimen/widget_margin">
     <include
         android:id="@+id/i_weekly_goals_heading"
         layout="@layout/weekly_goals_widget_heading"

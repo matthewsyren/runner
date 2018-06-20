@@ -16,6 +16,7 @@ public class SettingsFragment
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.distance_unit_preferences);
 
+        //Registers an OnSharedPreferenceChangeListener
         SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -27,5 +28,14 @@ public class SettingsFragment
             Toast.makeText(getContext(), getString(R.string.settings_updated), Toast.LENGTH_LONG).show();
             WidgetUtilities.updateWidgets(getContext());
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        //Unregisters the OnSharedPreferenceChangeListener
+        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 }

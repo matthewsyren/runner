@@ -97,8 +97,10 @@
 
     <!-- WeeklyGoalsService -->
     <string name="notification_met_target_title">You met your target!</string>
-    <string name="notification_met_target">Congratulations, you met your target for last week! You have now met your target for %d week in a row</string>
-    <string name="notification_met_targets">Congratulations, you met your target for last week! You have now met your target for %d weeks in a row</string>
+    <plurals name="notification_met_target">
+        <item quantity="one">Congratulations, you met your target for last week! You have now met your target for %d week in a row</item>
+        <item quantity="other">Congratulations, you met your target for last week! You have now met your target for %d weeks in a row</item>
+    </plurals>
     <string name="notification_channel">Main</string>
 
     <!-- SettingsActivity -->

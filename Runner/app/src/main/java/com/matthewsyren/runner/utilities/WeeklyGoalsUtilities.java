@@ -73,7 +73,7 @@ public class WeeklyGoalsUtilities {
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
 
-            //Schedules the Service to run on Monday morning at midnight
+            //Schedules the Service to run on Monday morning
             if(alarmManager != null){
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             }

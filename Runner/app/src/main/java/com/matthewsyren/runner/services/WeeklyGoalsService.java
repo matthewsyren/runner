@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -46,15 +47,9 @@ public class WeeklyGoalsService
         Intent intent = new Intent(context, WeeklyGoalsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        String message;
-
-        //Sets the appropriate message for the notification
-        if(target.getConsecutiveTargetsMet() > 1){
-            message = context.getString(R.string.notification_met_targets, target.getConsecutiveTargetsMet());
-        }
-        else{
-            message = context.getString(R.string.notification_met_target, target.getConsecutiveTargetsMet());
-        }
+        //Gets the Resources
+        Resources resources = context.getResources();
+        String message = resources.getQuantityString(R.plurals.notification_met_target, target.getConsecutiveTargetsMet(), target.getConsecutiveTargetsMet());
 
         //Creates the notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getString(R.string.notification_channel))

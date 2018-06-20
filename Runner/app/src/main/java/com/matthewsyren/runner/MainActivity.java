@@ -32,6 +32,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -143,9 +145,20 @@ public class MainActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == SIGN_IN_REQUEST_CODE){
+            //Adapted from https://github.com/firebase/FirebaseUI-Android/blob/master/auth/README.md?Response%20codes#response-codes
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
             if(resultCode == RESULT_CANCELED){
-                //Closes the app if the user cancels the sign in
-                Toast.makeText(getApplicationContext(), getString(R.string.sign_in_cancelled), Toast.LENGTH_LONG).show();
+                if(response != null && response.getError() != null && response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    //Displays a message if there is no Internet connection
+                    Toast.makeText(getApplicationContext(), R.string.error_no_internet_connection, Toast.LENGTH_LONG).show();
+                }
+                else{
+                    //Displays a message if the user cancels the sign in
+                    Toast.makeText(getApplicationContext(), getString(R.string.sign_in_cancelled), Toast.LENGTH_LONG).show();
+                }
+
+                //Closes the app
                 finish();
             }
         }

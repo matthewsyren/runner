@@ -26,7 +26,9 @@ dependencies {
     implementation 'com.android.support:support-media-compat:27.1.1'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:preference-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+
+    //Pinch to zoom
     implementation 'com.bogdwellers:pinchtozoom:0.1'
 
     //Butter Knife

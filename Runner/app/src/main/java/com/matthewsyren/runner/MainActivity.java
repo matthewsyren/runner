@@ -24,6 +24,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -304,7 +305,7 @@ public class MainActivity
                     );
                 }
                 else{
-                    if(UserAccountUtilities.getPreferredDistanceUnit(getApplicationContext()) == null){
+                    if(TextUtils.isEmpty(UserAccountUtilities.getPreferredDistanceUnit(getApplicationContext()))){
                         //Sets the user's default distance preference to km if it hasn't been set already
                         UserAccountUtilities.setDistanceUnitPreference(getApplicationContext());
                     }

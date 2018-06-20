@@ -117,7 +117,7 @@ public class FirebaseService
 
                 //Loops through all email addresses to see if the user's email address is there
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    if(snapshot != null && snapshot.getValue().equals(emailAddress)){
+                    if(snapshot != null && snapshot.getValue() != null && snapshot.getValue().equals(emailAddress)){
                         key = snapshot.getKey();
                     }
                 }

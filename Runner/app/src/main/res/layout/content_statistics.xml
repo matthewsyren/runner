@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/StatisticsCaptionStyle"
-                android:text="@string/run_average_speed_label"/>
+                android:text="@string/statistics_average_speed_label"/>
 
             <TextView
                 android:id="@+id/tv_average_speed"

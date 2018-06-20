@@ -2,7 +2,6 @@
 <resources>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="floating_action_button_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
@@ -20,7 +19,6 @@
     <!-- StatisticsActivity -->
     <dimen name="run_statistics_height">26sp</dimen>
     <dimen name="run_statistics_margin">16dp</dimen>
-    <dimen name="statistics_scroll_view_padding">16dp</dimen>
     <dimen name="statistics_caption_margin">6dp</dimen>
 
     <!-- WeeklyGoalsActivity -->

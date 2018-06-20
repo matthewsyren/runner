@@ -7,6 +7,7 @@ import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.matthewsyren.runner.R;
 import com.matthewsyren.runner.services.FirebaseService;
 
@@ -58,10 +59,14 @@ public class UserAccountUtilities {
     /**
      * Returns the user's email address
      */
-    public static String getUserEmailAddress(){
-        return FirebaseAuth.getInstance()
-                .getCurrentUser()
-                .getEmail();
+    private static String getUserEmailAddress(){
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance()
+                .getCurrentUser();
+
+        if(firebaseUser != null){
+            return firebaseUser.getEmail();
+        }
+        return null;
     }
 
     /**

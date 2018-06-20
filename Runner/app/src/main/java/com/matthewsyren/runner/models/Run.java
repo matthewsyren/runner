@@ -81,7 +81,7 @@ public class Run
     /**
      * Sends the Run to FirebaseService to be uploaded
      * @param userKey The user's unique key for Firebase
-     * @param imageKey The unique key generated when an image is uplaoded
+     * @param imageKey The unique key generated when an image is uploaded
      */
     public void requestUpload(Context context, String userKey, String imageKey, ResultReceiver resultReceiver){
         Intent intent = new Intent(context, FirebaseService.class);

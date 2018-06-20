@@ -37,7 +37,6 @@
     <string name="no">No</string>
     <string name="run_not_saved">Run not saved</string>
     <string name="run_saved">Run saved successfully</string>
-    <string name="dialog_cancellation_confirmation">Press back again to cancel. Note, if you cancel, your run information will be lost</string>
     <string name="uploading">Uploading&#8230;</string>
     <string name="leave_page_while_running_confirmation">You are currently on a run, if you leave this page now your information about this run will be lost. Do you want to leave this page?</string>
     <string name="action_cancelled">Action cancelled</string>

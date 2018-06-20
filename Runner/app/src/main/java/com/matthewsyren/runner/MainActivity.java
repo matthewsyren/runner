@@ -606,7 +606,7 @@ public class MainActivity
     }
 
     //Draws a polyline between the points that the user has visited while the app has been open
-    public void drawPolyline(LatLng position){
+    private void drawPolyline(LatLng position){
         if(position != null){
             /*
              * Adds a polyline to the map
@@ -622,7 +622,7 @@ public class MainActivity
     }
 
     //Zooms the camera to the specified LatLng location
-    public void zoomToLocation(LatLng location){
+    private void zoomToLocation(LatLng location){
         if(location != null){
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, 16);
             mGoogleMap.animateCamera(cameraUpdate);

@@ -2,6 +2,7 @@ package com.matthewsyren.runner.utilities;
 
 public class NumberUtilities {
     /**
+     * Rounds off to three decimal places
      * @param number The number to be rounded off
      */
     public static double roundOffToThreeDecimalPlaces(double number){
